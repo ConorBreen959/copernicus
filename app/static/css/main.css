@@ -1,0 +1,214 @@
+* {
+  box-sizing: inherit;
+  transition-property: all;
+  transition-duration: .6s;
+  transition-timing-function: ease;
+}
+
+body {
+    font-family: raleway-regular, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+    padding-top: 120px;
+    /*background-image: url(../img/background.jpg);*/
+    color: #2f5275;
+}
+
+@media (max-width: 1100px) {
+    body {
+        padding-top: 200px;
+    }
+}
+
+@media (max-width: 768px) {
+    body {
+        padding-top: 100px;
+    }
+}
+
+table {
+  display: block;
+  /*max-width: -moz-fit-content;*/
+  max-width: fit-content !important;
+  margin: 0 auto;
+  overflow-x: auto;
+  overflow-y: auto;
+  white-space: nowrap;
+}
+
+thead tr:nth-child(1) th{
+  position: sticky;
+  top: 0;
+  z-index: 10;
+}
+
+a {
+    color: #00194c;
+    text-decoration: none
+}
+
+.alert {
+    background-color: #d0a153;
+    color: #00194c;
+}
+
+.footer {
+    position: fixed;
+    bottom: 0;
+}
+
+.navbar {
+    font-family: raleway-regular, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
+    background-image: linear-gradient(to bottom right, #08415C, #1f4493);
+    position: fixed;
+    z-index: 999;
+    padding-top: 50px;
+    height: 100%;
+    min-width: 100px;
+    max-width: 250px;
+    top: 0;
+    tab-size: 4;
+}
+
+.navbar-brand {
+    margin-left: 5px;
+    padding: 0 15px;
+    width: 80px;
+    line-width: 80px;
+}
+
+.navbar-inverse .navbar-nav {
+    margin-top: 20px;
+}
+
+.navbar-inverse .navbar-nav > li > a {
+    margin-top: 40px;
+    width: 150px;
+    font-weight: 600;
+    font-size: 12px;
+    color: #FFFFFD;
+    text-transform: uppercase;
+}
+
+.navbar-toggle {
+    margin-right: 23px;
+    padding: 9px 10px !important;
+}
+
+.navbar-inverse .navbar-toggle .icon-bar {
+    background-color: #00194c;
+}
+
+
+.navbar-default .navbar-nav > li > a:hover, .navbar-default .navbar-nav > li > a:focus {
+    background-color: transparent;
+    color: #86A5D9;
+}
+
+.navbar-inverse .navbar-nav > li > a {
+    letter-spacing: 0;
+}
+
+.navbar-inverse .navbar-nav > li > a:hover, .navbar-inverse .navbar-nav > li > a:active {
+    /*color: #00194c;*/
+    color: #FFFFFF;
+    background-color: #86A5D9;
+    letter-spacing: 2px;
+}
+
+.navbar-inverse .navbar-nav > li > a:after, .navbar-inverse .navbar-nav > li > a:before {
+    backface-visibility: hidden;
+    border: 1px solid #FFFFFF;
+    bottom: 0px;
+    content: " ";
+    display: block;
+    margin: 0 auto;
+    position: relative;
+    transition: all 280ms ease-in-out;
+    width: 0;
+}
+
+.navbar-inverse .navbar-nav > li > a:after, .navbar-inverse .navbar-nav > li > a:before {
+    backface-visibility: hidden;
+    border-color: #FFFFFF;
+    transition: width 350ms ease-in-out;
+    width: 70%;
+}
+
+.navbar-inverse .navbar-nav > li > a:before {
+    bottom: auto;
+    top: 0;
+    width: 70%;
+}
+
+.navbar-inverse .navbar-nav > .open > a, .navbar-inverse .navbar-nav > .open > a:focus, .navbar-inverse .navbar-nav > .open > a:hover {
+    color: #00194c;
+    background-color: #86A5D9;
+}
+
+.dropdown-menu {
+    width: 250px;
+    margin-right: -100px
+}
+
+.btn-primary {
+    color: #FFFFFF;
+    background-color: #2f5275;
+    border-color: #2f5275;
+}
+
+.container {
+    width: 80%;
+}
+
+.panel-primary {
+    border: 0;
+    border-color: #FFFFFF;
+    box-shadow: 0 0 0 #FFFFFF;
+    margin-left: 100px;
+}
+
+.panel-primary > .panel-heading {
+    color: #FFFFFF;
+    background-color: #08415C;
+    border-color: #08415C;
+}
+
+.panel-title {
+    color: #FFFFFF;
+    font-weight: 400;
+}
+
+.panel-title > a {
+    color: #2f5275
+}
+
+.panel-primary > .panel-body {
+    color: #2f5275;
+    background-color: #FFFFFF;
+}
+
+select {
+    color: #2b542c;
+    width: auto;
+}
+
+.select2-results .select2-highlighted {
+    color: white;
+    background-color: #2f5275;
+}
+
+.select2-chosen {
+    color: #2f5275;
+}
+
+.form-control {
+    color: #2f5275;
+}
+
+.pagination > li > a {
+    color: #2f5275;
+}
+
+.pagination > .active > a {
+    background-color: #2f5275;
+    border-color: #2f5275;
+}
