@@ -1,0 +1,52 @@
+services:
+  site-db:
+    image: mysql:8.0
+    container_name: site-db
+    restart: always
+    networks:
+      - site-network
+    ports:
+      - "13306:3306"
+    volumes:
+      - site-db:/var/lib/mysql
+    secrets:
+      - mysql_root_password
+      - mysql_user_password
+    environment:
+      MYSQL_ROOT_PASSWORD_FILE: /run/secrets/mysql_root_password
+      MYSQL_PASSWORD_FILE: /run/secrets/mysql_user_password
+      MYSQL_DATABASE: site
+      MYSQL_USER: conor
+
+
+  prod-site:
+    image: prod-site:latest
+    container_name: prod-site
+    build:
+      context: .
+      dockerfile: Dockerfile
+    depends_on:
+      - site-db
+    links:
+      - site-db
+    networks:
+      - site-network
+    ports:
+      - 8000:8000
+    env_file: .env
+    
+
+secrets:
+  mysql_root_password:
+    file: /secrets/mysql_root_password
+  mysql_user_password:
+    file: /secrets/mysql_user_password
+
+
+volumes:
+  site-db:
+    driver: local
+
+networks:
+  site-network:
+    driver: bridge

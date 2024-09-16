@@ -1,0 +1,57 @@
+{% extends 'appbuilder/init.html' %}
+{% import 'appbuilder/baselib.html' as baselib %}
+
+{% block head_css %}
+    {{ super() }}
+    <link rel="stylesheet" type="text/css" href="//fonts.googleapis.com/css?family=Oswald"/>
+    <link rel="apple-touch-icon" sizes="180x180"
+          href="{{ url_for('static', filename='favicon/apple-touch-icon.png') }}">
+    <link rel="icon" type="image/png" sizes="32x32"
+          href="{{ url_for('static', filename='favicon/favicon-32x32.png') }}">
+    <link rel="icon" type="image/png" sizes="16x16"
+          href="{{ url_for('static', filename='favicon/favicon-16x16.png') }}">
+    <link rel="manifest" href="{{ url_for('static', filename='favicon/site.webmanifest') }}">
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/bootstrap-icons.css') }}"/>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='css/main.css') }}"/>
+
+{% endblock %}
+
+{% block head_js %}
+    {{ super() }}
+    <script src="{{ url_for('static', filename='js/main.js') }}"></script>
+{% endblock %}
+
+{% block body %}
+
+    {% include 'appbuilder/general/confirm.html' %}
+    {% include 'appbuilder/general/alert.html' %}
+
+    {% block navbar %}
+        <header class="top" role="header">
+            {% include 'my_navbar.html' %}
+        </header>
+    {% endblock %}
+
+    <div class="container">
+        <div class="row">
+            {% block messages %}
+                {% include 'appbuilder/flash.html' %}
+            {% endblock %}
+            {% block content %}
+            {% endblock %}
+        </div>
+    </div>
+
+    {% block footer %}
+        <footer>
+            <div class="footer">
+                <div class="img-rounded nav-fixed-bottom">
+                    <div class="container">
+                        {% include 'appbuilder/footer.html' %}
+                    </div>
+                </div>
+            </div>
+        </footer>
+    {% endblock %}
+{% endblock %}
+

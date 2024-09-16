@@ -1,0 +1,6 @@
+{% block content %}
+    <span id="graph">{{ graph | safe }}</span>
+    <script>
+        var graph = JSON.parse('{{ graph | tojson | safe}}');
+    </script>
+{% endblock %}

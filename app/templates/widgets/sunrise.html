@@ -1,0 +1,74 @@
+{% import 'appbuilder/general/lib.html' as lib %}
+
+{% block head_js %}
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.10/css/select2.min.css" rel="stylesheet" />
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.10/js/select2.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vega@5"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vega-lite@5"></script>
+    <script src="https://cdn.jsdelivr.net/npm/vega-embed@6"></script>
+    <script>window.jQuery || document.write('<script src="{{url_for('static', filename = 'jquery.js')}}">\x3C/script>')</script>
+    <script>
+        $(function () {
+            $('#search_button').on('click', function () {
+                var location = document.getElementById('location').value
+                $.ajax({
+                    url: '/sunriseview/graph/',
+                    data: {
+                        location: location,
+                    },
+                    dataType: 'json',
+                    beforeSend: function () {
+                        $("#graph_container").html("Generating...");
+                    },
+                    success: function (response) {
+                        console.log(response);
+
+                        vegaEmbed('#graph_container', response).catch(console.warn);
+                    },
+                    error: function (xhr) {
+                        $("#graph_container").html(xhr);
+                    }
+                });
+            });
+        });
+        $(document).ready(function() {
+            $("#location").select2({  // init Select2 on form's name field
+                placeholder: "{{ form.location.label.text }}",
+                allowClear: true,
+                "width": "style"
+            });
+        });
+    </script>
+
+{% endblock %}
+
+{% block body %}
+
+    {% set begin_sep_label = '<td class="col-lg-2">' %}
+    {% set end_sep_label = '</td>' %}
+    {% set begin_sep_field = '<td>' %}
+    {% set end_sep_field = '</td>' %}
+
+    <form id="sunrise_form" action="" method="post" enctype="multipart/form-data">
+        <div class="row">
+            <div class="col-md-4">
+                    <table class="table">
+                        {% for col in include_cols %}
+                            {% set field = form[col] %}
+                            {% if field.name not in exclude_cols %}
+                                <tr>
+                                    {{ lib.render_field(field, begin_sep_label, end_sep_label, begin_sep_field, end_sep_field) }}
+                                </tr>
+                            {% endif %}
+                        {% endfor %}
+                    </table>
+                </div>
+            <div class="col-md-4">
+                <button type='button' id="search_button" class="btn btn-sm btn-primary">Search</button>
+            </div>
+        </div>
+    </form>
+    <div id="graph_container"></div>
+
+{% endblock %}

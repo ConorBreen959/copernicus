@@ -1,0 +1,27 @@
+#! /bin/sh
+# beware gtrdi-dev.plusvital.com is the same server as git.plusvital.com
+
+set -e
+
+container="uat-tvp"
+
+echo $HOST
+
+docker stop "$container" || true
+docker rm "$container" || true
+
+docker-compose -f docker-compose-uat.yml build
+docker-compose -f docker-compose-uat.yml up -d
+
+#docker stop "$container" || true
+#docker rm "$container" || true
+#
+#docker build -t "$container" .
+#docker run -d --hostname "$container" \
+#           --name "$container" \
+#           --restart=always \
+#           -p 5005:5005 \
+#           -e ENVIRONMENT="uat" \
+#           "$container":latest
+
+docker system prune -a -f

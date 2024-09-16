@@ -1,0 +1,19 @@
+#! /bin/sh
+
+set -e
+
+container="prod-site"
+echo "------------------------"
+echo $CI_COMMIT_REF_SLUG
+
+docker stop "$container" || true
+docker rm "$container" || true
+
+docker build -t "$container" .
+docker run --name "$container" \
+           --network=host \
+           -p 5000:5000 \
+           -e ENVIRONMENT="prod" \
+           "$container":latest
+
+docker system prune -a -f
