@@ -8,7 +8,7 @@ from flask_appbuilder import AppBuilder, Base
 from flask_mail import Mail
 
 from .landing import MyIndexView
-from .manager import seed_users
+from .manager import seed_users, seed_data
 
 
 mail = Mail()
@@ -56,6 +56,7 @@ def create_app():
         alembic.revision("dev_migration")
         alembic.upgrade()
     seed_users()
+    seed_data()
     register_views()
     return app
 

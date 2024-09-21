@@ -34,12 +34,6 @@ table {
   white-space: nowrap;
 }
 
-thead tr:nth-child(1) th{
-  position: sticky;
-  top: 0;
-  z-index: 10;
-}
-
 a {
     color: #00194c;
     text-decoration: none

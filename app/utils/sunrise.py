@@ -3,16 +3,18 @@ from datetime import datetime, timedelta
 from skyfield import almanac
 from skyfield.api import N, E, wgs84, load
 import pandas as pd
-from geopy.geocoders import Nominatim
 from timezonefinder import TimezoneFinder
 import altair as alt
 from altair import datum
+
+from app.models import CityLocations
 
 
 class SunriseGraph:
     def __init__(self):
         self.timescale = load.timescale()
         self.eph = load("de421.bsp")
+        self.city = None
         self.timezone = None
         self.twilight_phases = None
         self.min_time = None
@@ -21,11 +23,11 @@ class SunriseGraph:
         self.max_date = None
 
     def set_timezone(self, city):
-        geolocator = Nominatim(user_agent="agent")
-        coords = geolocator.geocode(city)
-        string_timezone = TimezoneFinder().timezone_at(lng=coords.longitude, lat=coords.latitude)
+        self.city = city
+        city_location = CityLocations.query.filter_by(city_name=city).first()
+        string_timezone = TimezoneFinder().timezone_at(lng=city_location.longitude, lat=city_location.latitude)
         self.timezone = timezone(string_timezone)
-        location = wgs84.latlon(coords.latitude * N, coords.longitude * E)
+        location = wgs84.latlon(float(city_location.latitude) * N, float(city_location.longitude) * E)
         self.twilight_phases = almanac.dark_twilight_day(self.eph, location)
 
     def set_year(self, year):
@@ -43,17 +45,6 @@ class SunriseGraph:
         t1 = self.timescale.from_datetime(self.max_date)
         times, events = almanac.find_discrete(t0, t1, self.twilight_phases)
 
-        sunrise_df = pd.DataFrame(
-            columns=[
-                "Date",
-                "Event",
-                "Starts",
-                "Ends",
-                "Next Date",
-                "Next Starts",
-                "Next Ends",
-            ]
-        )
         data = []
         for index, (time, event) in enumerate(zip(times, events)):
             twilight_event = almanac.TWILIGHTS[event]
@@ -136,7 +127,7 @@ class SunriseGraph:
         alt.themes.register("background", background)
         alt.themes.enable("background")
 
-        chart = alt.LayerChart(title="Sunrise Chart")
+        chart = alt.LayerChart(title=f"Sunrise Chart: {self.city}")
         legend_y_position = 50
 
         y_scale = alt.Scale(domain=['1900-01-01T00:00:00', '1900-01-02T00:00:00'])
@@ -166,15 +157,15 @@ class SunriseGraph:
                     baseline="top",
                     fontWeight="bold"
                 ).encode(
-                    x=alt.value(1030),  # pixels from left
+                    x=alt.value(850),  # pixels from left
                     y=alt.value(legend_y_position + 10),  # pixels from top
                     text=alt.value([event_type]))
             
-                box = alt.Chart({'values': [{}]}).mark_rect(color=fill).encode(
-                    x=alt.value(1025),
-                    x2=alt.value(1150),
-                    y=alt.value(legend_y_position),
-                    y2=alt.value(legend_y_position + 30))
+                box = alt.Chart({'values': [{}]}).mark_rect(color=fill, cornerRadius=5).encode(
+                    x=alt.value(825),
+                    x2=alt.value(845),
+                    y=alt.value(legend_y_position + 5),
+                    y2=alt.value(legend_y_position + 25))
 
                 chart += box + text
         
@@ -190,8 +181,8 @@ class SunriseGraph:
             stroke=None
         )
         chart = chart.properties(
-            width=1000,
-            height=650
+            width=800,
+            height=450
         )
         chart = chart.interactive()
         return chart.to_json()

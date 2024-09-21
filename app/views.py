@@ -19,7 +19,7 @@ class SunriseView(SimpleFormView):
     edit_widget = SunriseWidget
 
     sun_graph = SunriseGraph()
-    location = "Dublin, IE"
+    location = "Dublin, Ireland"
     sun_graph.set_timezone(location)
     sun_graph.set_year(2024)
     sunrise_data = sun_graph.format_sunrise_data()
