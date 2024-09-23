@@ -44,6 +44,12 @@
 
 {% block body %}
 
+    <div id="header">
+        <h1>Sunrise Graph</h1>
+        <h2>This dashboard is designed to do some stuff.</h2>
+        <br>
+    </div>
+
     {% set begin_sep_label = '<td>' %}
     {% set end_sep_label = '</td>' %}
     {% set begin_sep_field = '<td>' %}
@@ -51,19 +57,17 @@
 
     <form id="sunrise_form" action="" method="post" enctype="multipart/form-data">
         <div class="row">
-            <div class="col-md-4">
-                <table class="table">
-                    {% for col in include_cols %}
-                        {% set field = form[col] %}
-                        {% if field.name not in exclude_cols %}
-                            <tr>
-                                {{ lib.render_field(field, begin_sep_label, end_sep_label, begin_sep_field, end_sep_field) }}
-                            </tr>
-                        {% endif %}
-                    {% endfor %}
-                </table>
+            <div class="col-md-3">
+                {% for col in include_cols %}
+                    {% set field = form[col] %}
+                    {% if field.name not in exclude_cols %}
+                        <tr>
+                            {{ lib.render_field(field, begin_sep_label, end_sep_label, begin_sep_field, end_sep_field) }}
+                        </tr>
+                    {% endif %}
+                {% endfor %}
             </div>
-            <div class="col-md-4">
+            <div class="col-md-3">
                 <button type='button' id="search_button" class="btn btn-sm btn-primary">Search</button>
             </div>
         </div>

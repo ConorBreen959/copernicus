@@ -49,6 +49,8 @@ class SunriseGraph:
         for index, (time, event) in enumerate(zip(times, events)):
             twilight_event = almanac.TWILIGHTS[event]
             start_date, start_time = self.format_time(time)
+            if start_date == datetime(2024, 4, 16):
+                print(start_date)
             if index == len(times) - 1:
                 end_date, end_time = self.format_time(t1)
             else:
@@ -57,6 +59,28 @@ class SunriseGraph:
             if start_time.hour > 12:
                 twilight_event = twilight_event.replace("dawn", "dusk")
             if end_date > start_date:
+                date_diff = (end_date - start_date).days
+                if date_diff > 1:
+                    data_dict = {
+                        "Date": start_date,
+                        "Event": twilight_event,
+                        "Starts": start_time,
+                        "Ends": self.max_time,
+                    }
+                    data.append(data_dict)
+                    count = 0
+                    while True:
+                        count += 1
+                        date = start_date + timedelta(days=count)
+                        data_dict = {
+                            "Date": date,
+                            "Event": twilight_event,
+                            "Starts": self.min_time,
+                            "Ends": self.max_time,
+                        }
+                        data.append(data_dict)
+                        if date_diff == count:
+                            break
                 data_dict = {
                     "Date": start_date,
                     "Event": twilight_event,
@@ -136,14 +160,16 @@ class SunriseGraph:
             event_chart = alt.Chart(sunrise_data).mark_area(color=fill).encode(
                 x='Date:T',
                 y=alt.Y('Starts:T', scale=y_scale),
-                y2='Ends:T'
+                y2='Ends:T',
+                tooltip=["Date", "Starts", "Ends"]
             ).transform_filter(
                 datum.Event == event_type
             )
             next_chart = alt.Chart(sunrise_data).mark_area(color=fill).encode(
                 x='Date:T',
                 y=alt.Y('Next Starts:T', scale=y_scale),
-                y2='Next Ends:T'
+                y2='Next Ends:T',
+                tooltip=["Date", "Starts", "Ends"]
             ).transform_filter(
                 datum.Event == event_type
             )
@@ -231,3 +257,60 @@ class SunriseGraph:
         date_object = date_object.replace(hour=0, minute=0, second=0, microsecond=0)
         time_object = datetime.strptime(time_x, "%H:%M")
         return date_object, time_object
+
+
+
+from geopy.geocoders import Nominatim
+
+sun_graph = SunriseGraph()
+alt.renderers.enable("browser")
+sun_graph.city = "Longyearbyen, Norway"
+geolocator = Nominatim(user_agent="agent")
+coords = geolocator.geocode(sun_graph.city)
+lat, lon = (coords.latitude, coords.longitude)
+string_timezone = TimezoneFinder().timezone_at(lng=lon, lat=lat)
+sun_graph.timezone = timezone(string_timezone)
+location = wgs84.latlon(lat * N, lon * E)
+sun_graph.twilight_phases = almanac.dark_twilight_day(sun_graph.eph, location)
+sun_graph.set_year(2024)
+
+sunrise_data = sun_graph.format_sunrise_data()
+
+chart = sun_graph.create_graph(sunrise_data)
+chart
+
+
+
+t0 = sun_graph.timescale.from_datetime(sun_graph.min_date)
+t1 = sun_graph.timescale.from_datetime(sun_graph.max_date)
+times, events = almanac.find_discrete(t0, t1, sun_graph.twilight_phases)
+
+data = []
+for index, (time, event) in enumerate(zip(times, events)):
+    twilight_event = almanac.TWILIGHTS[event]
+    start_date, start_time = sun_graph.format_time(time)
+    if index == len(times) - 1:
+        end_date, end_time = sun_graph.format_time(t1)
+    else:
+        end_date, end_time = sun_graph.format_time(times[index + 1])
+    twilight_event = twilight_event.replace("twilight", "dawn")
+    if start_time.hour > 12:
+        twilight_event = twilight_event.replace("dawn", "dusk")
+    if end_date > start_date:
+        data_dict = {
+            "Date": start_date,
+            "Event": twilight_event,
+            "Starts": start_time,
+            "Ends": sun_graph.max_time,
+            "Next Date": end_date,
+            "Next Starts": sun_graph.min_time,
+            "Next Ends": end_time,
+        }
+    else:
+        data_dict = {
+            "Date": start_date,
+            "Event": twilight_event,
+            "Starts": start_time,
+            "Ends": end_time,
+        }
+    data.append(data_dict)

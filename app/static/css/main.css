@@ -49,6 +49,10 @@ a {
     bottom: 0;
 }
 
+.content {
+    margin-left: 100px;
+}
+
 .navbar {
     font-family: raleway-regular, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
     background-image: linear-gradient(to bottom right, #08415C, #1f4493);
@@ -149,15 +153,22 @@ a {
     border-color: #2f5275;
 }
 
+body {
+    background: linear-gradient(to bottom, #ced7e0, #9ccddc, #5591a9, #054569) fixed;
+}
+
+.select2-container .select2-selection--single .select2-selection__rendered {
+    overflow: visible;
+}
+
 .container {
     width: 80%;
 }
 
 .panel-primary {
-    border: 0;
-    border-color: #FFFFFF;
+    border: 0 #FFFFFF;
     box-shadow: 0 0 0 #FFFFFF;
-    margin-left: 100px;
+    /*margin-left: 100px;*/
 }
 
 .panel-primary > .panel-heading {
@@ -177,7 +188,6 @@ a {
 
 .panel-primary > .panel-body {
     color: #2f5275;
-    background-color: #FFFFFF;
 }
 
 select {

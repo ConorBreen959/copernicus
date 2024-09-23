@@ -49,7 +49,7 @@ class HomeView(BaseView):
         #     login_user(user)
 
         greeting = "Greetings!"
-        return self.render_template("logged_user.html", greeting=greeting)
+        return self.render_template("index.html", greeting=greeting)
 
 
 class HealthView(BaseView):

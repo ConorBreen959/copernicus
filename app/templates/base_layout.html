@@ -33,15 +33,19 @@
         </header>
     {% endblock %}
 
-    <div class="container">
-        <div class="row">
-            {% block messages %}
-                {% include 'appbuilder/flash.html' %}
-            {% endblock %}
-            {% block content %}
-            {% endblock %}
+    {% block page %}
+        <div class="content">
+            <div class="container">
+                <div class="row">
+                    {% block messages %}
+                        {% include 'appbuilder/flash.html' %}
+                    {% endblock %}
+                    {% block content %}
+                    {% endblock %}
+                </div>
+            </div>
         </div>
-    </div>
+    {% endblock %}
 
     {% block footer %}
         <footer>
