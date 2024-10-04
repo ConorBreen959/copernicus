@@ -63,10 +63,9 @@ class SunriseGraph:
         for index, (time, event) in enumerate(zip(times, events)):
             twilight_event = almanac.TWILIGHTS[event]
             start_date, start_time = self.format_time(time)
+            end_date, end_time = self.format_time(times[index + 1])
             if index == len(times) - 1:
                 end_date, end_time = self.format_time(t1)
-            else:
-                end_date, end_time = self.format_time(times[index + 1])
             twilight_event = twilight_event.replace("twilight", "dawn")
             if start_time.hour > 12:
                 twilight_event = twilight_event.replace("dawn", "dusk")
