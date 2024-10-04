@@ -11,10 +11,12 @@
         $(function () {
             $('#search_button').on('click', function () {
                 var location = document.getElementById('location').value
+                var date_select = document.getElementById('date_select').value
                 $.ajax({
                     url: "/sunriseview/graph/",
                     data: {
                         location: location,
+                        date_select: date_select
                     },
                     dataType: 'json',
                     beforeSend: function () {
@@ -22,8 +24,10 @@
                     },
                     success: function (response) {
                         console.log(response);
-
-                        vegaEmbed('#graph_container', response).catch(console.warn);
+                        var sunrise_chart = response["sunrise_chart"]
+                        var date_chart = response["date_chart"]
+                        vegaEmbed('#sunrise_chart_container', sunrise_chart).catch(console.warn);
+                        vegaEmbed('#date_chart_container', date_chart).catch(console.warn);
                     },
                     error: function (xhr) {
                         $("#graph_container").html(xhr);
@@ -72,6 +76,7 @@
             </div>
         </div>
     </form>
-    <div id="graph_container"></div>
+    <div id="sunrise_chart_container"></div>
+    <div id="date_chart_container"></div>
 
 {% endblock %}

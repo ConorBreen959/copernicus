@@ -7,8 +7,6 @@ from timezonefinder import TimezoneFinder
 import altair as alt
 from altair import datum
 
-from app.models import CityLocations
-
 
 class SunriseGraph:
     def __init__(self):
@@ -21,13 +19,29 @@ class SunriseGraph:
         self.max_time = None
         self.min_date = None
         self.max_date = None
+        self.event_types = {
+            # "Astronomical dawn": "#016792",
+            # "Astronomical dusk": "#016792",
+            # "Nautical dawn": "#74d4cc",
+            # "Nautical dusk": "#74d4cc",
+            # "Civil dawn": "#efeebc",
+            # "Civil dusk": "#efeebc",
+            # "Day": "#fee154",
+            "Night": "#39304A",
+            "Astronomical dawn": "#693f59",
+            "Astronomical dusk": "#693f59",
+            "Nautical dawn": "#b56576",
+            "Nautical dusk": "#b56576",
+            "Civil dawn": "#eaac8b",
+            "Civil dusk": "#eaac8b",
+            "Day": "#ffd27d",
+        }
 
-    def set_timezone(self, city):
-        self.city = city
-        city_location = CityLocations.query.filter_by(city_name=city).first()
-        string_timezone = TimezoneFinder().timezone_at(lng=city_location.longitude, lat=city_location.latitude)
+    def set_timezone(self, city_dict):
+        self.city = city_dict["city_name"]
+        string_timezone = TimezoneFinder().timezone_at(lng=city_dict["longitude"], lat=city_dict["latitude"])
         self.timezone = timezone(string_timezone)
-        location = wgs84.latlon(float(city_location.latitude) * N, float(city_location.longitude) * E)
+        location = wgs84.latlon(float(city_dict["latitude"]) * N, float(city_dict["longitude"]) * E)
         self.twilight_phases = almanac.dark_twilight_day(self.eph, location)
 
     def set_year(self, year):
@@ -49,8 +63,6 @@ class SunriseGraph:
         for index, (time, event) in enumerate(zip(times, events)):
             twilight_event = almanac.TWILIGHTS[event]
             start_date, start_time = self.format_time(time)
-            if start_date == datetime(2024, 4, 16):
-                print(start_date)
             if index == len(times) - 1:
                 end_date, end_time = self.format_time(t1)
             else:
@@ -103,23 +115,6 @@ class SunriseGraph:
         return sunrise_df
 
     def create_graph(self, sunrise_data):
-        event_types = {
-            # "Astronomical dawn": "#016792",
-            # "Astronomical dusk": "#016792",
-            # "Nautical dawn": "#74d4cc",
-            # "Nautical dusk": "#74d4cc",
-            # "Civil dawn": "#efeebc",
-            # "Civil dusk": "#efeebc",
-            # "Day": "#fee154",
-            "Astronomical dawn": "#693f59",
-            "Astronomical dusk": "#693f59",
-            "Nautical dawn": "#b56576",
-            "Nautical dusk": "#b56576",
-            "Civil dawn": "#eaac8b",
-            "Civil dusk": "#eaac8b",
-            "Day": "#ffd27d",
-        }
-
         def background():
             theme = {
                 "config": {
@@ -135,7 +130,7 @@ class SunriseGraph:
                         "fontWeight": 600,
                     },
                     "area": {
-                        "fill": "##909090"
+                        "fill": "#909090"
                     },
                     # "axis": {
                     #     "domainColor": "#FFFFFF",
@@ -156,46 +151,47 @@ class SunriseGraph:
 
         y_scale = alt.Scale(domain=['1900-01-01T00:00:00', '1900-01-02T00:00:00'])
 
-        for event_type, fill in event_types.items():
-            event_chart = alt.Chart(sunrise_data).mark_area(color=fill).encode(
-                x='Date:T',
-                y=alt.Y('Starts:T', scale=y_scale),
-                y2='Ends:T',
-                tooltip=["Date", "Starts", "Ends"]
-            ).transform_filter(
-                datum.Event == event_type
-            )
-            next_chart = alt.Chart(sunrise_data).mark_area(color=fill).encode(
-                x='Date:T',
-                y=alt.Y('Next Starts:T', scale=y_scale),
-                y2='Next Ends:T',
-                tooltip=["Date", "Starts", "Ends"]
-            ).transform_filter(
-                datum.Event == event_type
-            )
+        for event_type, fill in self.event_types.items():
+            if event_type != "Night":
+                event_chart = alt.Chart(sunrise_data).mark_area(color=fill).encode(
+                    x='Date:T',
+                    y=alt.Y('Starts:T', scale=y_scale),
+                    y2='Ends:T',
+                    tooltip=["Date", "Starts", "Ends"]
+                ).transform_filter(
+                    datum.Event == event_type
+                )
+                next_chart = alt.Chart(sunrise_data).mark_area(color=fill).encode(
+                    x='Date:T',
+                    y=alt.Y('Next Starts:T', scale=y_scale),
+                    y2='Next Ends:T',
+                    tooltip=["Date", "Starts", "Ends"]
+                ).transform_filter(
+                    datum.Event == event_type
+                )
+                
+                legend_y_position += 25
+    
+                if any(string in event_type for string in ["dawn", "Day"]):
+                    text = alt.Chart({'values': [{}]}).mark_text(
+                        color="#000000",
+                        align="left",
+                        baseline="top",
+                        fontWeight="bold"
+                    ).encode(
+                        x=alt.value(850),  # pixels from left
+                        y=alt.value(legend_y_position + 10),  # pixels from top
+                        text=alt.value([event_type]))
+                
+                    box = alt.Chart({'values': [{}]}).mark_rect(color=fill, cornerRadius=5).encode(
+                        x=alt.value(825),
+                        x2=alt.value(845),
+                        y=alt.value(legend_y_position + 5),
+                        y2=alt.value(legend_y_position + 25))
+    
+                    chart += box + text
             
-            legend_y_position += 25
-
-            if any(string in event_type for string in ["dawn", "Day"]):
-                text = alt.Chart({'values': [{}]}).mark_text(
-                    color="#000000",
-                    align="left",
-                    baseline="top",
-                    fontWeight="bold"
-                ).encode(
-                    x=alt.value(850),  # pixels from left
-                    y=alt.value(legend_y_position + 10),  # pixels from top
-                    text=alt.value([event_type]))
-            
-                box = alt.Chart({'values': [{}]}).mark_rect(color=fill, cornerRadius=5).encode(
-                    x=alt.value(825),
-                    x2=alt.value(845),
-                    y=alt.value(legend_y_position + 5),
-                    y2=alt.value(legend_y_position + 25))
-
-                chart += box + text
-        
-            chart += event_chart + next_chart
+                chart += event_chart + next_chart
 
         chart = chart.encode(
             alt.X(axis=alt.Axis(format="%b")).title("Date"),
@@ -211,12 +207,12 @@ class SunriseGraph:
             height=450
         )
         chart = chart.interactive()
-        return chart.to_json()
+        return chart
     
     def create_date_chart(self, date, sunrise_data):
         date_df = sunrise_data.loc[sunrise_data["Date"] == date]
         night = sunrise_data.loc[date_df.index[0] - 1]
-        night["Date"] = date
+        night["Date"] = datetime.strptime(date, "%Y-%m-%d")
         night["Starts"] = night["Next Starts"]
         night["Ends"] = night["Next Ends"]
         night = night.to_frame().T
@@ -226,9 +222,8 @@ class SunriseGraph:
             date_df,
         ])
         date_df_with_night = date_df_with_night.infer_objects()
-        event_types["Night"] = "#000000"
         chart = None
-        for event_type, fill in event_types.items():
+        for event_type, fill in self.event_types.items():
             event_chart = alt.Chart(date_df_with_night).mark_bar(size=50, color=fill).encode(
                 x='Starts:T',
                 x2='Ends:T',
@@ -248,7 +243,22 @@ class SunriseGraph:
             width=300,
             height=50
         )
-        chart = chart 
+        chart = chart.interactive()
+        return chart
+    
+    def add_date_line(self, date, chart):
+        formatted_date = datetime.strptime(date, "%Y-%m-%d")
+        date_dict = {
+            "Date": [formatted_date, formatted_date],
+            "Starts": [datetime.strptime(time, "%H:%M") for time in ["00:00", "23:59"]]
+        }
+        date_df = pd.DataFrame(data=date_dict)
+        date_line_chart = alt.Chart(date_df).mark_line(color="#FFFFFF").encode(
+            x="Date:T",
+            y="Starts:T"
+        )
+        chart += date_line_chart
+        return chart
 
     def format_time(self, time):
         time_string = str(time.astimezone(self.timezone))[:16]
@@ -257,60 +267,3 @@ class SunriseGraph:
         date_object = date_object.replace(hour=0, minute=0, second=0, microsecond=0)
         time_object = datetime.strptime(time_x, "%H:%M")
         return date_object, time_object
-
-
-
-from geopy.geocoders import Nominatim
-
-sun_graph = SunriseGraph()
-alt.renderers.enable("browser")
-sun_graph.city = "Longyearbyen, Norway"
-geolocator = Nominatim(user_agent="agent")
-coords = geolocator.geocode(sun_graph.city)
-lat, lon = (coords.latitude, coords.longitude)
-string_timezone = TimezoneFinder().timezone_at(lng=lon, lat=lat)
-sun_graph.timezone = timezone(string_timezone)
-location = wgs84.latlon(lat * N, lon * E)
-sun_graph.twilight_phases = almanac.dark_twilight_day(sun_graph.eph, location)
-sun_graph.set_year(2024)
-
-sunrise_data = sun_graph.format_sunrise_data()
-
-chart = sun_graph.create_graph(sunrise_data)
-chart
-
-
-
-t0 = sun_graph.timescale.from_datetime(sun_graph.min_date)
-t1 = sun_graph.timescale.from_datetime(sun_graph.max_date)
-times, events = almanac.find_discrete(t0, t1, sun_graph.twilight_phases)
-
-data = []
-for index, (time, event) in enumerate(zip(times, events)):
-    twilight_event = almanac.TWILIGHTS[event]
-    start_date, start_time = sun_graph.format_time(time)
-    if index == len(times) - 1:
-        end_date, end_time = sun_graph.format_time(t1)
-    else:
-        end_date, end_time = sun_graph.format_time(times[index + 1])
-    twilight_event = twilight_event.replace("twilight", "dawn")
-    if start_time.hour > 12:
-        twilight_event = twilight_event.replace("dawn", "dusk")
-    if end_date > start_date:
-        data_dict = {
-            "Date": start_date,
-            "Event": twilight_event,
-            "Starts": start_time,
-            "Ends": sun_graph.max_time,
-            "Next Date": end_date,
-            "Next Starts": sun_graph.min_time,
-            "Next Ends": end_time,
-        }
-    else:
-        data_dict = {
-            "Date": start_date,
-            "Event": twilight_event,
-            "Starts": start_time,
-            "Ends": end_time,
-        }
-    data.append(data_dict)

@@ -1,10 +1,12 @@
 import json
-from flask import g, render_template, jsonify, request
+from datetime import date
+from flask import render_template, jsonify, request
 from flask_appbuilder import BaseView, SimpleFormView, expose
 from flask_appbuilder.widgets import ListWidget
 
 from app import appbuilder
 from app.forms import SunriseForm
+from app.models import CityLocations
 from app.utils.sunrise import SunriseGraph
 
 
@@ -19,22 +21,40 @@ class SunriseView(SimpleFormView):
     edit_widget = SunriseWidget
 
     sun_graph = SunriseGraph()
+    date = date.today().strftime("%Y-%m-%d")
     location = "Dublin, Ireland"
-    sun_graph.set_timezone(location)
+    city_location = CityLocations.query.filter_by(city_name=location).first()
+    city_dict = city_location.to_json()
+    sun_graph.set_timezone(city_dict)
     sun_graph.set_year(2024)
     sunrise_data = sun_graph.format_sunrise_data()
-    sunrise_graph = sun_graph.create_graph(sunrise_data)
+    sunrise_chart = sun_graph.create_graph(sunrise_data)
+    chart_with_line = sun_graph.add_date_line(date, sunrise_chart)
+    date_chart = sun_graph.create_date_chart(date, sunrise_data)
+    json_packet = {
+        "sunrise_chart": json.loads(sunrise_chart.to_json()),
+        "date_chart": json.loads(date_chart.to_json())
+    }
 
     @expose("/graph/", methods=["GET", "POST"])
     def graph(self):
         if self.form.validate_on_submit:
             location = request.args.get("location")
+            date = request.args.get("date_select")
             if location != self.location:
-                self.sun_graph.set_timezone(location)
+                city_location = CityLocations.query.filter_by(city_name=location).first()
+                city_dict = city_location.to_json()
+                self.sun_graph.set_timezone(city_dict)
                 self.sun_graph.set_year(2024)
-                sunrise_data = self.sun_graph.format_sunrise_data()
-                self.sunrise_graph = self.sun_graph.create_graph(sunrise_data)
-            return jsonify(json.loads(self.sunrise_graph))
+                self.sunrise_data = self.sun_graph.format_sunrise_data()
+                self.sunrise_chart = self.sun_graph.create_graph(self.sunrise_data)
+                self.json_packet["sunrise_chart"] = json.loads(self.sunrise_chart)
+            if date != self.date:
+                self.chart_with_line = self.sun_graph.add_date_line(date, self.sunrise_chart)
+                self.date_chart = self.sun_graph.create_date_chart(date, self.sunrise_data)
+                self.json_packet["date_chart"] = json.loads(self.date_chart)
+            return jsonify(self.json_packet)
+        return jsonify(self.json_packet)
 
 
 class HomeView(BaseView):
