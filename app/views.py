@@ -29,10 +29,11 @@ class SunriseView(SimpleFormView):
     sun_graph.set_year(2024)
     sunrise_data = sun_graph.format_sunrise_data()
     sunrise_chart = sun_graph.create_graph(sunrise_data)
-    chart_with_line = sun_graph.add_date_line(date, sunrise_chart)
+    date_line = sun_graph.add_date_line(date)
+    chart_with_line = sunrise_chart + date_line
     date_chart = sun_graph.create_date_chart(date, sunrise_data)
     json_packet = {
-        "sunrise_chart": json.loads(sunrise_chart.to_json()),
+        "sunrise_chart": json.loads(chart_with_line.to_json()),
         "date_chart": json.loads(date_chart.to_json())
     }
 
@@ -48,11 +49,12 @@ class SunriseView(SimpleFormView):
                 self.sun_graph.set_year(2024)
                 self.sunrise_data = self.sun_graph.format_sunrise_data()
                 self.sunrise_chart = self.sun_graph.create_graph(self.sunrise_data)
-                self.json_packet["sunrise_chart"] = json.loads(self.sunrise_chart)
             if date != self.date:
-                self.chart_with_line = self.sun_graph.add_date_line(date, self.sunrise_chart)
+                self.date_line = self.sun_graph.add_date_line(date)
                 self.date_chart = self.sun_graph.create_date_chart(date, self.sunrise_data)
-                self.json_packet["date_chart"] = json.loads(self.date_chart)
+                self.json_packet["date_chart"] = json.loads(self.date_chart.to_json())
+            self.chart_with_line = self.sunrise_chart + self.date_line
+            self.json_packet["sunrise_chart"] = json.loads(self.chart_with_line.to_json())
             return jsonify(self.json_packet)
         return jsonify(self.json_packet)
 

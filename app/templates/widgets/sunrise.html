@@ -54,14 +54,14 @@
         <br>
     </div>
 
-    {% set begin_sep_label = '<td>' %}
-    {% set end_sep_label = '</td>' %}
-    {% set begin_sep_field = '<td>' %}
-    {% set end_sep_field = '</td>' %}
+    {% set begin_sep_label = '' %}
+    {% set end_sep_label = '' %}
+    {% set begin_sep_field = '' %}
+    {% set end_sep_field = '' %}
 
     <form id="sunrise_form" action="" method="post" enctype="multipart/form-data">
-        <div class="row">
-            <div class="col-md-3">
+        <div class="col">
+            <div class="row-md-6">
                 {% for col in include_cols %}
                     {% set field = form[col] %}
                     {% if field.name not in exclude_cols %}
@@ -71,12 +71,11 @@
                     {% endif %}
                 {% endfor %}
             </div>
-            <div class="col-md-3">
-                <button type='button' id="search_button" class="btn btn-sm btn-primary">Search</button>
-            </div>
+            <button type='button' id="search_button" class="btn btn-sm btn-primary">Search</button>
         </div>
     </form>
-    <div id="sunrise_chart_container"></div>
-    <div id="date_chart_container"></div>
-
+    <div class="col">
+        <div id="sunrise_chart_container"></div>
+        <div id="date_chart_container"></div>
+    </div>
 {% endblock %}

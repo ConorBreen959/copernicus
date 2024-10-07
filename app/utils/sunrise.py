@@ -63,9 +63,10 @@ class SunriseGraph:
         for index, (time, event) in enumerate(zip(times, events)):
             twilight_event = almanac.TWILIGHTS[event]
             start_date, start_time = self.format_time(time)
-            end_date, end_time = self.format_time(times[index + 1])
             if index == len(times) - 1:
                 end_date, end_time = self.format_time(t1)
+            else:
+                end_date, end_time = self.format_time(times[index + 1])
             twilight_event = twilight_event.replace("twilight", "dawn")
             if start_time.hour > 12:
                 twilight_event = twilight_event.replace("dawn", "dusk")
@@ -245,7 +246,7 @@ class SunriseGraph:
         chart = chart.interactive()
         return chart
     
-    def add_date_line(self, date, chart):
+    def add_date_line(self, date):
         formatted_date = datetime.strptime(date, "%Y-%m-%d")
         date_dict = {
             "Date": [formatted_date, formatted_date],
@@ -256,8 +257,7 @@ class SunriseGraph:
             x="Date:T",
             y="Starts:T"
         )
-        chart += date_line_chart
-        return chart
+        return date_line_chart
 
     def format_time(self, time):
         time_string = str(time.astimezone(self.timezone))[:16]
