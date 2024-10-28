@@ -1,3 +1,5 @@
+from datetime import date
+
 from flask_appbuilder.forms import DynamicForm
 from wtforms import SelectField
 from wtforms.fields.datetime import DateField
@@ -10,8 +12,8 @@ class SunriseForm(DynamicForm):
     locations = [("", "")]
     for city in city_locations:
         locations.append((city.city_name, city.city_name))
-    location = SelectField("Select Location", choices=locations)
-    date_select = DateField("Select Date")
+    location = SelectField("Select Location", choices=locations, default="Dublin, Ireland")
+    date_select = DateField("Select Date", default=date.today())
 
 #
 # class CopernicusForm(DynamicForm):

@@ -154,6 +154,10 @@ body {
     width: 80%;
 }
 
+.date-chart-container{
+    margin-left: 100px
+}
+
 .panel-primary {
     border: 0 #FFFFFF;
     box-shadow: 0 0 0 #FFFFFF;

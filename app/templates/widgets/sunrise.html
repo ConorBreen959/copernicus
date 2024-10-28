@@ -20,7 +20,8 @@
                     },
                     dataType: 'json',
                     beforeSend: function () {
-                        $("#graph_container").html("Generating...");
+                        $("#sunrise_chart_container").html("Generating...");
+                        $("#date_chart_container").html("");
                     },
                     success: function (response) {
                         console.log(response);
@@ -30,7 +31,8 @@
                         vegaEmbed('#date_chart_container', date_chart).catch(console.warn);
                     },
                     error: function (xhr) {
-                        $("#graph_container").html(xhr);
+                        $("#sunrise_chart_container").html(xhr);
+                        $("#date_chart_container").html("");
                     }
                 });
             });
@@ -50,32 +52,36 @@
 
     <div id="header">
         <h1>Sunrise Graph</h1>
-        <h2>This dashboard is designed to do some stuff.</h2>
+        <h2>Observe the change in sunrise and sunset times for a selected location.</h2>
+        <h3>Displays twilight phases across the entire year and on a selected date.</h3>
         <br>
     </div>
 
-    {% set begin_sep_label = '' %}
-    {% set end_sep_label = '' %}
-    {% set begin_sep_field = '' %}
-    {% set end_sep_field = '' %}
+    {% set begin_sep_label = '<td class="col-md-3>' %}
+    {% set end_sep_label = '</td>' %}
+    {% set begin_sep_field = '<td>' %}
+    {% set end_sep_field = '</td>' %}
 
-    <form id="sunrise_form" action="" method="post" enctype="multipart/form-data">
+    <div class="col-md-3">
+        <form id="sunrise_form" action="" method="post" enctype="multipart/form-data">
+                <div class="table-responsive">
+                    <table class="table table-bordered">
+                        {% for col in include_cols %}
+                            {% set field = form[col] %}
+                            {% if field.name not in exclude_cols %}
+                                <tr>
+                                    {{ lib.render_field(field, begin_sep_label, end_sep_label, begin_sep_field, end_sep_field) }}
+                                </tr>
+                            {% endif %}
+                        {% endfor %}
+                    </table>
+                </div>
+        </form>
+        <button type='button' id="search_button" class="btn btn-sm btn-primary">Search</button>
         <div class="col">
-            <div class="row-md-6">
-                {% for col in include_cols %}
-                    {% set field = form[col] %}
-                    {% if field.name not in exclude_cols %}
-                        <tr>
-                            {{ lib.render_field(field, begin_sep_label, end_sep_label, begin_sep_field, end_sep_field) }}
-                        </tr>
-                    {% endif %}
-                {% endfor %}
-            </div>
-            <button type='button' id="search_button" class="btn btn-sm btn-primary">Search</button>
+            <hr class="solid">
+            <div id="sunrise_chart_container" class="sunrise-chart-container"></div>
+            <div id="date_chart_container" class="date-chart-container"></div>
         </div>
-    </form>
-    <div class="col">
-        <div id="sunrise_chart_container"></div>
-        <div id="date_chart_container"></div>
     </div>
 {% endblock %}

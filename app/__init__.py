@@ -65,12 +65,17 @@ def register_views():
     from app.views import (
         HomeView,
         HealthView,
-        SunriseView
+        SunriseView,
+        PositionsView,
     )
 
     appbuilder.add_view(
         SunriseView,
         "Sunrise View",
+    )
+    appbuilder.add_view(
+        PositionsView,
+        "Astral Positions View",
     )
     appbuilder.add_view_no_menu(HomeView())
     appbuilder.add_view_no_menu(HealthView())

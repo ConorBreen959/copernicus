@@ -39,9 +39,13 @@ class SunriseGraph:
 
     def set_timezone(self, city_dict):
         self.city = city_dict["city_name"]
-        string_timezone = TimezoneFinder().timezone_at(lng=city_dict["longitude"], lat=city_dict["latitude"])
+        string_timezone = TimezoneFinder().timezone_at(
+            lng=city_dict["longitude"], lat=city_dict["latitude"]
+        )
         self.timezone = timezone(string_timezone)
-        location = wgs84.latlon(float(city_dict["latitude"]) * N, float(city_dict["longitude"]) * E)
+        location = wgs84.latlon(
+            float(city_dict["latitude"]) * N, float(city_dict["longitude"]) * E
+        )
         self.twilight_phases = almanac.dark_twilight_day(self.eph, location)
 
     def set_year(self, year):
@@ -118,27 +122,20 @@ class SunriseGraph:
         def background():
             theme = {
                 "config": {
-                    "view": {
-                        "height": 300,
-                        "width": 300,
-                        "fill": "#39304A"
-                    },
+                    "view": {"height": 300, "width": 300, "fill": "#39304A"},
                     "title": {
                         "anchor": "start",
                         "dy": -15,
                         "fontSize": 16,
                         "fontWeight": 600,
                     },
-                    "area": {
-                        "fill": "#909090"
-                    },
+                    "area": {"fill": "#909090"},
                     # "axis": {
                     #     "domainColor": "#FFFFFF",
                     #     "gridColor": "#FFFFFF",
                     #     "tickColor": "#FFFFFF",
                     #     "labelColor": "#FFFFFF",
                     # },
-
                 }
             }
             return theme
@@ -149,113 +146,147 @@ class SunriseGraph:
         chart = alt.LayerChart(title=f"Sunrise Chart: {self.city}")
         legend_y_position = 50
 
-        y_scale = alt.Scale(domain=['1900-01-01T00:00:00', '1900-01-02T00:00:00'])
+        y_axis_limits = list(reversed(["1900-01-01T00:00:00", "1900-01-02T00:00:00"]))
+        y_scale = alt.Scale(domain=y_axis_limits)
 
         for event_type, fill in self.event_types.items():
             if event_type != "Night":
-                event_chart = alt.Chart(sunrise_data).mark_area(color=fill).encode(
-                    x='Date:T',
-                    y=alt.Y('Starts:T', scale=y_scale),
-                    y2='Ends:T',
-                    tooltip=["Date", "Starts", "Ends"]
-                ).transform_filter(
-                    datum.Event == event_type
+                event_chart = (
+                    alt.Chart(sunrise_data)
+                    .mark_area(color=fill)
+                    .encode(
+                        x="Date:T",
+                        y=alt.Y("Starts:T", scale=y_scale),
+                        y2="Ends:T",
+                        tooltip=["Event", "Date", alt.Tooltip("Starts", format="%H:%M"), alt.Tooltip("Ends", format="%H:%M")],
+                    )
+                    .transform_filter(datum.Event == event_type)
                 )
-                next_chart = alt.Chart(sunrise_data).mark_area(color=fill).encode(
-                    x='Date:T',
-                    y=alt.Y('Next Starts:T', scale=y_scale),
-                    y2='Next Ends:T',
-                    tooltip=["Date", "Starts", "Ends"]
-                ).transform_filter(
-                    datum.Event == event_type
+                next_chart = (
+                    alt.Chart(sunrise_data)
+                    .mark_area(color=fill)
+                    .encode(
+                        x="Date:T",
+                        y=alt.Y("Next Starts:T", scale=y_scale),
+                        y2="Next Ends:T",
+                        tooltip=["Date", alt.Tooltip("Starts", format="%H:%M"), alt.Tooltip("Ends", format="%H:%M")],
+                    )
+                    .transform_filter(datum.Event == event_type)
                 )
-                
+
                 legend_y_position += 25
-    
+
                 if any(string in event_type for string in ["dawn", "Day"]):
-                    text = alt.Chart({'values': [{}]}).mark_text(
-                        color="#000000",
-                        align="left",
-                        baseline="top",
-                        fontWeight="bold"
-                    ).encode(
-                        x=alt.value(850),  # pixels from left
-                        y=alt.value(legend_y_position + 10),  # pixels from top
-                        text=alt.value([event_type]))
-                
-                    box = alt.Chart({'values': [{}]}).mark_rect(color=fill, cornerRadius=5).encode(
-                        x=alt.value(825),
-                        x2=alt.value(845),
-                        y=alt.value(legend_y_position + 5),
-                        y2=alt.value(legend_y_position + 25))
-    
+                    text = (
+                        alt.Chart()
+                        .mark_text(
+                            color="#000000",
+                            align="left",
+                            baseline="top",
+                            fontWeight="bold",
+                        )
+                        .encode(
+                            x=alt.value(850),  # pixels from left
+                            y=alt.value(legend_y_position + 10),  # pixels from top
+                            text=alt.value([event_type]),
+                        )
+                    )
+
+                    box = (
+                        alt.Chart()
+                        .mark_rect(color=fill, cornerRadius=5)
+                        .encode(
+                            x=alt.value(825),
+                            x2=alt.value(845),
+                            y=alt.value(legend_y_position + 5),
+                            y2=alt.value(legend_y_position + 25),
+                        )
+                    )
+
                     chart += box + text
-            
+
                 chart += event_chart + next_chart
 
         chart = chart.encode(
             alt.X(axis=alt.Axis(format="%b")).title("Date"),
             alt.Y(axis=alt.Axis(format="%H:%M", tickCount=6)).title("Hour"),
         )
-        chart = chart.configure_axis(
-            grid=False
-        ).configure_view(
-            stroke=None
-        )
-        chart = chart.properties(
-            width=800,
-            height=450
-        )
+        chart = chart.configure_axis(grid=False).configure_view(stroke=None)
+        chart = chart.properties(width=800, height=450)
         chart = chart.interactive()
         return chart
-    
+
     def create_date_chart(self, date, sunrise_data):
-        date_df = sunrise_data.loc[sunrise_data["Date"] == date]
-        night = sunrise_data.loc[date_df.index[0] - 1]
-        night["Date"] = datetime.strptime(date, "%Y-%m-%d")
-        night["Starts"] = night["Next Starts"]
-        night["Ends"] = night["Next Ends"]
-        night = night.to_frame().T
+        date_df = sunrise_data.loc[sunrise_data["Date"] == date, ["Date", "Event", "Starts", "Ends"]]
+        next_date_df = sunrise_data.loc[sunrise_data["Next Date"] == date, ["Next Date", "Event", "Next Starts", "Next Ends"]]
+        next_date_df.columns = [
+            column.replace("Next ", "") for column in next_date_df.columns
+        ]
+        date_df = pd.concat([date_df, next_date_df])
+        date_object = datetime.strptime(date, "%Y-%m-%d")
+        chart = alt.LayerChart().encode(
+            alt.X(axis=alt.Axis(format="%H:%M", tickCount=9)).title("Hour"),
+            alt.Y(axis=None),
+        )
+        chart = chart.properties(width=600, height=80)
         
-        date_df_with_night = pd.concat([
-            night,
-            date_df,
-        ])
-        date_df_with_night = date_df_with_night.infer_objects()
-        chart = None
-        for event_type, fill in self.event_types.items():
-            event_chart = alt.Chart(date_df_with_night).mark_bar(size=50, color=fill).encode(
-                x='Starts:T',
-                x2='Ends:T',
-                y='Date:T',
-            ).transform_filter(
-                datum.Event == event_type
+        date_chart = (
+            alt.Chart(date_df)
+            .mark_bar(size=80)
+            .encode(
+                x="Starts:T",
+                x2="Ends:T",
+                y="Date:T",
+                color=alt.Color("Event:N")
+                .scale(
+                    domain=list(self.event_types.keys()),
+                    range=list(self.event_types.values()),
+                ).legend(None)
             )
-            if not chart:
-                chart = event_chart
-            else:
-                chart = chart + event_chart
-        chart = chart.encode(
-            alt.X(axis=alt.Axis(format="%H")).title("Hour"),
-            alt.Y('Date').axis(None),
         )
-        chart = chart.properties(
-            width=300,
-            height=50
+        box = (
+            alt.Chart()
+            .mark_rect(color="#DBE2E9")
+            .encode(
+                x=alt.value(-80),
+                x2=alt.value(0),
+                y=alt.value(0),
+                y2=alt.value(81),
+            )
         )
-        chart = chart.interactive()
+        y_position = 20
+        for date_format in ["%d", "%b"]:
+            text = (
+                alt.Chart()
+                .mark_text(
+                    color="#08415C",
+                    align="center",
+                    baseline="top",
+                    fontWeight="bold",
+                    fontSize=20
+                )
+                .encode(
+                    x=alt.value(-40),  # pixels from left
+                    y=alt.value(y_position),  # pixels from top
+                    text=alt.value(date_object.strftime(date_format))
+                )
+            )
+            box += text
+            y_position += 20
+        chart += date_chart + box
         return chart
-    
+
     def add_date_line(self, date):
         formatted_date = datetime.strptime(date, "%Y-%m-%d")
         date_dict = {
             "Date": [formatted_date, formatted_date],
-            "Starts": [datetime.strptime(time, "%H:%M") for time in ["00:00", "23:59"]]
+            "Starts": [datetime.strptime(time, "%H:%M") for time in ["00:00", "23:59"]],
         }
         date_df = pd.DataFrame(data=date_dict)
-        date_line_chart = alt.Chart(date_df).mark_line(color="#FFFFFF").encode(
-            x="Date:T",
-            y="Starts:T"
+        date_line_chart = (
+            alt.Chart(date_df)
+            .mark_line(color="#FFFFFF")
+            .encode(x="Date:T", y="Starts:T")
         )
         return date_line_chart
 
@@ -266,3 +297,4 @@ class SunriseGraph:
         date_object = date_object.replace(hour=0, minute=0, second=0, microsecond=0)
         time_object = datetime.strptime(time_x, "%H:%M")
         return date_object, time_object
+

@@ -68,6 +68,10 @@ class Config:
         ["SunriseView", "can_graph"],
         ["SunriseView", "can_this_form_get"],
         ["SunriseView", "can_this_form_post"],
+        ["Positions View", "menu_access"],
+        ["PositionsView", "can_graph"],
+        ["PositionsView", "can_this_form_get"],
+        ["PositionsView", "can_this_form_post"],
     ]
     FAB_ROLES = {
         # "Public": [
