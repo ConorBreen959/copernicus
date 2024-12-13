@@ -20,6 +20,8 @@ blinker==1.8.2
     # via flask-mail
 certifi==2024.7.4
     # via skyfield
+cffi==1.17.1
+    # via cryptography
 click==8.1.7
     # via
     #   flask
@@ -29,6 +31,8 @@ colorama==0.4.6
     #   click
     #   flask-appbuilder
     #   pytest
+cryptography==44.0.0
+    # via -r requirements.in
 deprecated==1.2.14
     # via limits
 dnspython==2.6.1
@@ -142,6 +146,8 @@ pluggy==1.5.0
     # via pytest
 prison==0.2.1
     # via flask-appbuilder
+pycparser==2.22
+    # via cffi
 pygments==2.18.0
     # via rich
 pyjwt==2.8.0
