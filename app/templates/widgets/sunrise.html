@@ -8,6 +8,13 @@
     <script src="https://cdn.jsdelivr.net/npm/vega-embed@6"></script>
     <script>window.jQuery || document.write('<script src="{{url_for('static', filename = 'jquery.js')}}">\x3C/script>')</script>
     <script>
+        $(document).ready(function() {
+            $("#location").select2({  // init Select2 on form's name field
+                placeholder: "{{ form.location.label.text }}",
+                allowClear: true,
+                "width": "style"
+            });
+        });
         $(function () {
             $('#search_button').on('click', function () {
                 var location = document.getElementById('location').value
@@ -44,6 +51,7 @@
                 "width": "style"
             });
         });
+
     </script>
 
 {% endblock %}
@@ -51,9 +59,7 @@
 {% block body %}
 
     <div id="header">
-        <h1>Sunrise Graph</h1>
-        <h2>Observe the change in sunrise and sunset times for a selected location.</h2>
-        <h3>Displays twilight phases across the entire year and on a selected date.</h3>
+        <h3>Twilight phases, sunrise, and sunset times for a selected location.</h3>
         <br>
     </div>
 
@@ -81,6 +87,7 @@
         <div class="col">
             <hr class="solid">
             <div id="sunrise_chart_container" class="sunrise-chart-container"></div>
+            <hr class="solid">
             <div id="date_chart_container" class="date-chart-container"></div>
         </div>
     </div>

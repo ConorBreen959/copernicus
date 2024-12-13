@@ -66,17 +66,20 @@ def register_views():
         HomeView,
         HealthView,
         SunriseView,
-        PositionsView,
+        AstralPositionsView,
     )
 
     appbuilder.add_view(
         SunriseView,
         "Sunrise View",
+        label="Sunrise",
     )
     appbuilder.add_view(
-        PositionsView,
+        AstralPositionsView,
         "Astral Positions View",
+        label="Astral Positions",
     )
+
     appbuilder.add_view_no_menu(HomeView())
     appbuilder.add_view_no_menu(HealthView())
     # appbuilder.security_cleanup()

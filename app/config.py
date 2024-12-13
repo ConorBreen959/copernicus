@@ -68,18 +68,16 @@ class Config:
         ["SunriseView", "can_graph"],
         ["SunriseView", "can_this_form_get"],
         ["SunriseView", "can_this_form_post"],
-        ["Positions View", "menu_access"],
-        ["PositionsView", "can_graph"],
-        ["PositionsView", "can_this_form_get"],
-        ["PositionsView", "can_this_form_post"],
+        # ["AstralPositions View", "menu_access"],
+        # ["AstralPositionsView", "can_show"],
+        # ["AstralPositionsView", "can_this_form_get"],
     ]
     FAB_ROLES = {
-        # "Public": [
-        #     ["MyIndexView", "menu_access"],
-        #     ["Home View", "menu_access"],
-        #     ["HomeView", "can_home"],
-        #
-        # ] + SUNRISE_ROLES,
+        "Public": [
+            ["MyIndex View", "menu_access"],
+            ["Home View", "menu_access"],
+            ["HomeView", "can_home"],
+        ] + SUNRISE_ROLES,
         "BaseUser": [
             ["UserDBModelView", "can_userinfo"],
             ["UserDBModelView", "userinfoedit"],

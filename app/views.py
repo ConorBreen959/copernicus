@@ -1,6 +1,6 @@
 import json
 import logging
-from datetime import date
+from datetime import datetime
 from flask import render_template, jsonify, request
 from flask_appbuilder import BaseView, SimpleFormView, expose
 from flask_appbuilder.widgets import ListWidget
@@ -18,56 +18,41 @@ class SunriseWidget(ListWidget):
 class SunriseView(SimpleFormView):
     route_base = "/sunriseview"
     form = SunriseForm
-    form_title = "Sunrise"
+    form_title = "Sunrise Graph"
     edit_widget = SunriseWidget
 
-    sun_graph = SunriseGraph()
-    date = date.today().strftime("%Y-%m-%d")
-    location = "Dublin, Ireland"
-    city_location = CityLocations.query.filter_by(city_name=location).first()
-    city_dict = city_location.to_json()
-    sun_graph.set_timezone(city_dict)
-    sun_graph.set_year(2024)
-    sunrise_data = sun_graph.format_sunrise_data()
-    sunrise_chart = sun_graph.create_graph(sunrise_data)
-    date_line = sun_graph.add_date_line(date)
-    chart_with_line = sunrise_chart + date_line
-    date_chart = sun_graph.create_date_chart(date, sunrise_data)
-    json_packet = {
-        "sunrise_chart": json.loads(chart_with_line.to_json()),
-        "date_chart": json.loads(date_chart.to_json())
+    defaults = {
+        "location": "Dublin, Ireland",
+        "date": datetime.now().strftime("%Y-%m-%d")
     }
+    city_location = CityLocations.query.filter_by(city_name=defaults["location"]).first()
+    city_dict = city_location.to_json()
+    sun_graph = SunriseGraph(city_dict, defaults["date"])
 
     @expose("/graph/", methods=["GET", "POST"])
     def graph(self):
-        sun_graph = SunriseGraph()
         if self.form.validate_on_submit:
             location = request.args.get("location")
             date = request.args.get("date_select")
-            city_location = CityLocations.query.filter_by(city_name=location).first()
-            city_dict = city_location.to_json()
-            sun_graph.set_timezone(city_dict)
-            sun_graph.set_year(int(date[0:4]))
-            sunrise_data = sun_graph.format_sunrise_data()
-            sunrise_chart = sun_graph.create_graph(sunrise_data)
-            date_line = sun_graph.add_date_line(date)
-            date_chart = sun_graph.create_date_chart(date, sunrise_data)
-            chart_with_line = sunrise_chart + date_line
+            if location != self.defaults["location"]:
+                city_location = CityLocations.query.filter_by(city_name=location).first()
+                city_dict = city_location.to_json()
+                self.sun_graph = SunriseGraph(city_dict, date)
+            sunrise_chart, date_chart = self.sun_graph.create_charts(date)
             json_packet = {
-                "sunrise_chart": json.loads(chart_with_line.to_json()),
+                "sunrise_chart": json.loads(sunrise_chart.to_json()),
                 "date_chart": json.loads(date_chart.to_json())
             }
             return jsonify(json_packet)
 
 
-class PositionsView(SimpleFormView):
+class AstralPositionsView(BaseView):
+    route_base = "/astralpositionsview"
     default_view = "show"
 
-    @expose("/show/", methods=["GET", "POST"])
+    @expose("/show/", methods=["GET"])
     def show(self):
-        if request.method == 'POST':
-            faturamento = request.form['faturamento']
-        return self.render_template("widgets/astral_positions.html", min=0, max=100)
+        return self.render_template("widgets/astral_positions.html")
 
 
 class HomeView(BaseView):

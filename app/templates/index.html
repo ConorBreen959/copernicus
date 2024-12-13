@@ -1,13 +1,10 @@
 {% extends "appbuilder/base.html" %}
+{% import 'appbuilder/general/lib.html' as lib %}
 
 {% block content %}
-    <h1>
-        <div style="text-align: left;">Copernicus</div>
-    </h1>
-    <h3>
-        <div style="text-align: left;">This app is designed to display positions of planetary bodies, chart sunrise and sunset times for a selected city, and aid in astronomy.</div>
-    </h3>
-
-{#    <div class="well">#}
+    {{ lib.panel_begin("") }}
+    <div style="text-align: center;">
+    <h1>Copernicus</h1>
+    <h3>This app is designed to display positions of planetary bodies, chart sunrise and<br>sunset times for a selected location, and aid in astronomy.</h3>
     </div>
 {% endblock %}
