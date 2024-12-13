@@ -1,14 +1,14 @@
 services:
-  site-db:
+  copernicus-db:
     image: mysql:8.0
-    container_name: site-db
+    container_name: copernicus-db
     restart: always
     networks:
-      - site-network
+      - copernicus-network
     ports:
-      - "32000:3306"
+      - "33000:3306"
     volumes:
-      - site-db:/var/lib/mysql
+      - copernicus-db:/var/lib/mysql
     secrets:
       - mysql_root_password
       - mysql_user_password
@@ -26,13 +26,13 @@ services:
       context: .
       dockerfile: Dockerfile
     depends_on:
-      - site-db
+      - copernicus-db
     links:
-      - site-db
+      - copernicus-db
     networks:
-      - site-network
+      - copernicus-network
     ports:
-      - 127.0.0.1:8000:8000
+      - 127.0.0.1:5000:5000
     restart: "always"
     secrets:
       - mysql_user_password
@@ -44,12 +44,12 @@ services:
   certbot:
     image: certbot/dns-cloudflare
     container_name:
-      certbot
+      copernicus-certbot
     volumes:
       - certbot_etc:/etc/letsencrypt
       - /root/cloudflare.ini:/root/cloudflare.ini
     networks:
-      - site-network
+      - copernicus-network
     command: >-
       certonly --dns-cloudflare
       --dns-cloudflare-credentials /root/cloudflare.ini
@@ -68,9 +68,9 @@ secrets:
 
 volumes:
   certbot_etc:
-  site-db:
+  copernicus-db:
     driver: local
 
 networks:
-  site-network:
+  copernicus-network:
     driver: bridge
