@@ -6,7 +6,7 @@ services:
     networks:
       - site-network
     ports:
-      - "13306:3306"
+      - "32000:3306"
     volumes:
       - site-db:/var/lib/mysql
     secrets:
@@ -15,13 +15,13 @@ services:
     environment:
       MYSQL_ROOT_PASSWORD_FILE: /run/secrets/mysql_root_password
       MYSQL_PASSWORD_FILE: /run/secrets/mysql_user_password
-      MYSQL_DATABASE: site
+      MYSQL_DATABASE: copernicus
       MYSQL_USER: conor
 
 
-  prod-site:
-    image: prod-site:latest
-    container_name: prod-site
+  copernicus:
+    image: copernicus:latest
+    container_name: copernicus
     build:
       context: .
       dockerfile: Dockerfile
@@ -32,9 +32,32 @@ services:
     networks:
       - site-network
     ports:
-      - 8000:8000
+      - 127.0.0.1:8000:8000
+    restart: "always"
+    secrets:
+      - mysql_user_password
     env_file: .env
+    environment:
+      MYSQL_PASSWORD_FILE: /run/secrets/mysql_user_password
     
+
+  certbot:
+    image: certbot/dns-cloudflare
+    container_name:
+      certbot
+    volumes:
+      - certbot_etc:/etc/letsencrypt
+      - /root/cloudflare.ini:/root/cloudflare.ini
+    networks:
+      - site-network
+    command: >-
+      certonly --dns-cloudflare
+      --dns-cloudflare-credentials /root/cloudflare.ini
+      -m breenc96@gmail.com
+      --keep-until-expiring
+      --agree-tos --no-eff-email
+      -d copernicus.conorbreen.com
+
 
 secrets:
   mysql_root_password:
@@ -44,6 +67,7 @@ secrets:
 
 
 volumes:
+  certbot_etc:
   site-db:
     driver: local
 
