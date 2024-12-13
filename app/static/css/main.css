@@ -34,12 +34,6 @@ table {
   white-space: nowrap;
 }
 
-thead tr:nth-child(1) th{
-  position: sticky;
-  top: 0;
-  z-index: 10;
-}
-
 a {
     color: #00194c;
     text-decoration: none
@@ -51,13 +45,30 @@ a {
 }
 
 .footer {
+    color: #d0a153;
     position: fixed;
     bottom: 0;
+    min-width: 100px;
+    max-width: 250px;
+
+}
+
+img {
+    height: 200px;
+    width: 200px;
+}
+
+.content {
+    margin-left: 100px;
+}
+
+.icon-color {
+  color: #d0a153;
 }
 
 .navbar {
     font-family: raleway-regular, ui-sans-serif, system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, "Noto Sans", sans-serif, "Apple Color Emoji", "Segoe UI Emoji", "Segoe UI Symbol", "Noto Color Emoji";
-    background-image: linear-gradient(to bottom right, #08415C, #1f4493);
+    background-color: #312450;
     position: fixed;
     z-index: 999;
     padding-top: 50px;
@@ -70,8 +81,9 @@ a {
 
 .navbar-brand {
     margin-left: 5px;
+    margin-bottom: 100px;
     padding: 0 15px;
-    width: 80px;
+    width: 200px;
     line-width: 80px;
 }
 
@@ -80,12 +92,40 @@ a {
 }
 
 .navbar-inverse .navbar-nav > li > a {
-    margin-top: 40px;
+    margin-top: 60px;
+    margin-right: 0;
+    padding-right: 0;
     width: 150px;
     font-weight: 600;
     font-size: 12px;
-    color: #FFFFFD;
+    color: #DDDDDD;
     text-transform: uppercase;
+    text-align: right;
+    letter-spacing: 2px;
+    border: none;
+    position: relative;
+}
+
+.navbar-inverse .navbar-nav > li > a:before, .navbar-inverse .navbar-nav > li > a:after {
+    border-radius: 0.2em;
+    bottom: 0;
+    content: '';
+    height: 0.2em;
+    position: absolute;
+    right: 0;
+    width: 100%;
+}
+
+.navbar-inverse .navbar-nav > li > a:after {
+    content:"";
+    background-image: -moz-linear-gradient(to right, #5e42a6, #b74e91);
+    background-image: -webkit-linear-gradient(to right, #5e42a6, #b74e91);
+    background-image: -ms-linear-gradient(to right, #5e42a6, #b74e91);
+    background-image: linear-gradient(to right, #5e42a6, #b74e91);
+    -moz-transition: max-width 0.2s ease;
+    -webkit-transition: max-width 0.2s ease;
+    -ms-transition: max-width 0.2s ease;
+    transition: max-width 0.2s ease;
 }
 
 .navbar-toggle {
@@ -100,48 +140,11 @@ a {
 
 .navbar-default .navbar-nav > li > a:hover, .navbar-default .navbar-nav > li > a:focus {
     background-color: transparent;
-    color: #86A5D9;
-}
-
-.navbar-inverse .navbar-nav > li > a {
-    letter-spacing: 0;
+    color: #f5ff8a;
 }
 
 .navbar-inverse .navbar-nav > li > a:hover, .navbar-inverse .navbar-nav > li > a:active {
-    /*color: #00194c;*/
-    color: #FFFFFF;
-    background-color: #86A5D9;
-    letter-spacing: 2px;
-}
-
-.navbar-inverse .navbar-nav > li > a:after, .navbar-inverse .navbar-nav > li > a:before {
-    backface-visibility: hidden;
-    border: 1px solid #FFFFFF;
-    bottom: 0px;
-    content: " ";
-    display: block;
-    margin: 0 auto;
-    position: relative;
-    transition: all 280ms ease-in-out;
-    width: 0;
-}
-
-.navbar-inverse .navbar-nav > li > a:after, .navbar-inverse .navbar-nav > li > a:before {
-    backface-visibility: hidden;
-    border-color: #FFFFFF;
-    transition: width 350ms ease-in-out;
-    width: 70%;
-}
-
-.navbar-inverse .navbar-nav > li > a:before {
-    bottom: auto;
-    top: 0;
-    width: 70%;
-}
-
-.navbar-inverse .navbar-nav > .open > a, .navbar-inverse .navbar-nav > .open > a:focus, .navbar-inverse .navbar-nav > .open > a:hover {
-    color: #00194c;
-    background-color: #86A5D9;
+    color: #f5ff8a;
 }
 
 .dropdown-menu {
@@ -155,21 +158,32 @@ a {
     border-color: #2f5275;
 }
 
+body {
+    background: url("../img/background.jpg")
+}
+
+.select2-container .select2-selection--single .select2-selection__rendered {
+    overflow: visible;
+}
+
 .container {
     width: 80%;
 }
 
+.date-chart-container{
+    margin-left: 100px
+}
+
 .panel-primary {
-    border: 0;
-    border-color: #FFFFFF;
+    border: 0 #FFFFFF;
     box-shadow: 0 0 0 #FFFFFF;
-    margin-left: 100px;
+    /*margin-left: 100px;*/
 }
 
 .panel-primary > .panel-heading {
     color: #FFFFFF;
-    background-color: #08415C;
-    border-color: #08415C;
+    background-color: #312450;
+    border-color: #312450;
 }
 
 .panel-title {
@@ -183,7 +197,6 @@ a {
 
 .panel-primary > .panel-body {
     color: #2f5275;
-    background-color: #FFFFFF;
 }
 
 select {

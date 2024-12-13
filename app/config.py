@@ -25,10 +25,10 @@ class Config:
     # ------------------------------
     # GLOBALS FOR APP Builder
     # ------------------------------
-    # Uncomment to setup Your App name
-    APP_NAME = os.environ.get("APP_NAME", "Conor Breen")
-    APP_ICON = os.environ.get("APP_ICON", "/static/img/logo.png")
-    APP_THEME = "flatly.css"
+    # Uncomment to set up Your App name
+    APP_NAME = os.environ.get("APP_NAME", "Copernicus")
+    APP_ICON = os.environ.get("APP_ICON", "/static/img/solar-logo.png")
+    # APP_THEME = "flatly.css"
     print(APP_NAME)
     # ----------------------------------------------------
     # AUTHENTICATION CONFIG
@@ -68,14 +68,16 @@ class Config:
         ["SunriseView", "can_graph"],
         ["SunriseView", "can_this_form_get"],
         ["SunriseView", "can_this_form_post"],
+        # ["AstralPositions View", "menu_access"],
+        # ["AstralPositionsView", "can_show"],
+        # ["AstralPositionsView", "can_this_form_get"],
     ]
     FAB_ROLES = {
-        # "Public": [
-        #     ["MyIndexView", "menu_access"],
-        #     ["Home View", "menu_access"],
-        #     ["HomeView", "can_home"],
-        #
-        # ] + SUNRISE_ROLES,
+        "Public": [
+            ["MyIndex View", "menu_access"],
+            ["Home View", "menu_access"],
+            ["HomeView", "can_home"],
+        ] + SUNRISE_ROLES,
         "BaseUser": [
             ["UserDBModelView", "can_userinfo"],
             ["UserDBModelView", "userinfoedit"],

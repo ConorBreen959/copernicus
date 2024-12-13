@@ -16,19 +16,27 @@
                 </a>
             {% else %}
                 <span class="navbar-brand">
-                <a href="{{ appbuilder.get_url_for_index }}" style="color:white">
+                <a href="{{ appbuilder.get_url_for_index }}">
                 {{ appbuilder.app_name }}
                 </a>
                 </span>
             {% endif %}
         </div>
         <div class="navbar-collapse collapse">
-            <ul class="nav navbar-nav">
-                {% include 'appbuilder/navbar_right.html' %}
-            </ul>
             <ul class="nav navbar-nav navbar-right">
                 {% include 'appbuilder/navbar_menu.html' %}
             </ul>
         </div>
     </div>
+    {% block footer %}
+        <footer>
+            <div class="footer">
+                <div class="img-rounded nav-fixed-bottom">
+                    <div class="container">
+                        {% include 'appbuilder/footer.html' %}
+                    </div>
+                </div>
+            </div>
+        </footer>
+    {% endblock %}
 </div>

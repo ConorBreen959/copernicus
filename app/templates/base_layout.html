@@ -4,6 +4,7 @@
 {% block head_css %}
     {{ super() }}
     <link rel="stylesheet" type="text/css" href="//fonts.googleapis.com/css?family=Oswald"/>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.10/css/select2.min.css" rel="stylesheet" />
     <link rel="apple-touch-icon" sizes="180x180"
           href="{{ url_for('static', filename='favicon/apple-touch-icon.png') }}">
     <link rel="icon" type="image/png" sizes="32x32"
@@ -32,26 +33,18 @@
         </header>
     {% endblock %}
 
-    <div class="container">
-        <div class="row">
-            {% block messages %}
-                {% include 'appbuilder/flash.html' %}
-            {% endblock %}
-            {% block content %}
-            {% endblock %}
-        </div>
-    </div>
-
-    {% block footer %}
-        <footer>
-            <div class="footer">
-                <div class="img-rounded nav-fixed-bottom">
-                    <div class="container">
-                        {% include 'appbuilder/footer.html' %}
-                    </div>
+    {% block page %}
+        <div class="content">
+            <div class="container">
+                <div class="row">
+                    {% block messages %}
+                        {% include 'appbuilder/flash.html' %}
+                    {% endblock %}
+                    {% block content %}
+                    {% endblock %}
                 </div>
             </div>
-        </footer>
+        </div>
     {% endblock %}
 {% endblock %}
 
