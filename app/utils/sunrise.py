@@ -312,6 +312,21 @@ class SunriseGraph:
             .mark_line(color="#FFFFFF")
             .encode(x="Date:T", y="Starts:T")
         )
+        text = date_line_chart.mark_text(
+            align="center",
+            baseline="top",
+            dy=-15,
+            fontWeight="bold",
+            color="#08415C",
+        ).encode(
+            text="Date",
+             opacity=alt.condition(
+                 alt.datum.Starts == alt.expr.toDate('1900-01-01T23:59'),
+                 alt.value(1),
+                 alt.value(0)
+             )
+         )
+        date_line_chart += text
         return date_line_chart
 
     def format_time(self, time):
