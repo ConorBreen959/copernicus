@@ -3,15 +3,14 @@
 
 {% block content %}
     {{ lib.panel_begin("") }}
-    <div style="text-align: left;">
+    <div style="text-align: center;">
     <h1><strong>Copernicus</strong></h1>
-    <br>
-    <h3>This app is designed to display sunrise and sunset times and aid in astronomy.</h3>
-    <br>
+    <hr class="solid">
+    <h4>This app is designed to display sunrise and sunset times and aid in astronomy.</h4>
     <h4>It has been designed using Flask and custom HTML. Astral calculations are done using Skyfield.</h4>
-    <h4>Currently the Sunrise module is the only one completed and in production.</h4>
-    <h4>It charts sunrise and sunset times across the year and on a selected date for a selected location.</h4>
-    <h4>Twilight phases and their times are also included.</h4>
-    <h4>This module is a re-implementation from scratch of the excellent Sunrise calculator provided by <strong><a href="https://www.timeanddate.com/sun/ireland/dublin">timeanddate.com.</a></strong></h4>
+    <br>
+        <h4>Currently the Sunrise module is the only one completed and in production. It charts sunrise and sunset times across</h4>
+        <h4>the year and on a selected date for a selected location. Twilight phases and their times are also included.</h4>
+    <h4>This module is inspired by the excellent Sunrise calculator provided by <strong><a href="https://www.timeanddate.com/sun/ireland/dublin">timeanddate.com.</a></strong>, including a re-implementation from scratch of the sunrise graph.</h4>
     </div>
 {% endblock %}
