@@ -10,5 +10,5 @@ Base = declarative_base()
 class CityLocations(AuditMixin, Model):
     id = Column(Integer, primary_key=True)
     city_name = Column(String(512))
-    latitude = Column(DECIMAL(8, 7))
-    longitude = Column(DECIMAL(8, 7))
+    latitude = Column(DECIMAL(9, 6))
+    longitude = Column(DECIMAL(9, 6))

@@ -1,52 +1,49 @@
 services:
-  site-db:
-    image: mysql:8.0
-    container_name: site-db
-    restart: always
-    networks:
-      - site-network
-    ports:
-      - "13306:3306"
-    volumes:
-      - site-db:/var/lib/mysql
-    secrets:
-      - mysql_root_password
-      - mysql_user_password
-    environment:
-      MYSQL_ROOT_PASSWORD_FILE: /run/secrets/mysql_root_password
-      MYSQL_PASSWORD_FILE: /run/secrets/mysql_user_password
-      MYSQL_DATABASE: site
-      MYSQL_USER: conor
-
-
-  prod-site:
-    image: prod-site:latest
-    container_name: prod-site
+  copernicus:
+    image: copernicus:latest
+    container_name: copernicus
     build:
       context: .
       dockerfile: Dockerfile
-    depends_on:
-      - site-db
-    links:
-      - site-db
     networks:
-      - site-network
+      - db-network
     ports:
-      - 8000:8000
+      - 127.0.0.1:5000:5000
+    restart: "always"
+    secrets:
+      - mysql_user_password
     env_file: .env
-    
+    environment:
+      MYSQL_PASSWORD_FILE: /run/secrets/mysql_user_password
+
+
+  certbot:
+    image: certbot/dns-cloudflare
+    container_name:
+      copernicus-certbot
+    volumes:
+      - certbot_etc:/etc/letsencrypt
+      - /root/cloudflare.ini:/root/cloudflare.ini
+    networks:
+      - db-network
+    command: >-
+      certonly --dns-cloudflare
+      --dns-cloudflare-credentials /root/cloudflare.ini
+      -m breenc96@gmail.com
+      --keep-until-expiring
+      --agree-tos --no-eff-email
+      -d copernicus.conorbreen.com
+
 
 secrets:
-  mysql_root_password:
-    file: /secrets/mysql_root_password
   mysql_user_password:
     file: /secrets/mysql_user_password
 
 
 volumes:
-  site-db:
-    driver: local
+  certbot_etc:
+
 
 networks:
-  site-network:
-    driver: bridge
+  db-network:
+    external: true
