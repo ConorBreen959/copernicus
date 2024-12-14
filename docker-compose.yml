@@ -1,36 +1,12 @@
 services:
-  copernicus-db:
-    image: mysql:8.0
-    container_name: copernicus-db
-    restart: always
-    networks:
-      - copernicus-network
-    ports:
-      - "33000:3306"
-    volumes:
-      - copernicus-db:/var/lib/mysql
-    secrets:
-      - mysql_root_password
-      - mysql_user_password
-    environment:
-      MYSQL_ROOT_PASSWORD_FILE: /run/secrets/mysql_root_password
-      MYSQL_PASSWORD_FILE: /run/secrets/mysql_user_password
-      MYSQL_DATABASE: copernicus
-      MYSQL_USER: conor
-
-
   copernicus:
     image: copernicus:latest
     container_name: copernicus
     build:
       context: .
       dockerfile: Dockerfile
-    depends_on:
-      - copernicus-db
-    links:
-      - copernicus-db
     networks:
-      - copernicus-network
+      - db-network
     ports:
       - 127.0.0.1:5000:5000
     restart: "always"
@@ -39,7 +15,7 @@ services:
     env_file: .env
     environment:
       MYSQL_PASSWORD_FILE: /run/secrets/mysql_user_password
-    
+
 
   certbot:
     image: certbot/dns-cloudflare
@@ -49,7 +25,7 @@ services:
       - certbot_etc:/etc/letsencrypt
       - /root/cloudflare.ini:/root/cloudflare.ini
     networks:
-      - copernicus-network
+      - db-network
     command: >-
       certonly --dns-cloudflare
       --dns-cloudflare-credentials /root/cloudflare.ini
@@ -60,17 +36,14 @@ services:
 
 
 secrets:
-  mysql_root_password:
-    file: /secrets/mysql_root_password
   mysql_user_password:
     file: /secrets/mysql_user_password
 
 
 volumes:
   certbot_etc:
-  copernicus-db:
-    driver: local
+
 
 networks:
-  copernicus-network:
-    driver: bridge
+  db-network:
+    external: true
