@@ -1,0 +1,32 @@
+name: Deploy to server
+on:
+  push:
+    branches:
+      - main
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Set up SSH key
+        run: |
+          sudo apt-get install openssh-client -y
+          mkdir -p ~/.ssh
+          eval $(ssh-agent -s)
+          echo "${{ secrets.PRIVATE_SSH_KEY }}" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+          echo "${{ secrets.SSH_KNOWN_HOSTS }}" > ~/.ssh/known_hosts
+          chmod 644 ~/.ssh/known_hosts
+
+      - name: Deploy to server
+        run: |
+          ssh -p ${{ secrets.PORT }} ${{ secrets.USER }}@${{ secrets.HOST }} << ENDSSH
+          eval $(ssh-agent -s)
+          cd ${{ secrets.APP_PATH }}
+          git pull origin main
+          docker compose down ${{ secrets.APP_NAME }}
+          docker compose build
+          docker compose up -d
+          ENDSSH
