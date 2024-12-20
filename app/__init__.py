@@ -76,7 +76,7 @@ def register_views():
     )
     appbuilder.add_view(
         AstralPositionsView,
-        "Astral Positions View",
+        "AstralPositions View",
         label="Astral Positions",
     )
 

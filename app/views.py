@@ -48,10 +48,10 @@ class SunriseView(SimpleFormView):
 
 class AstralPositionsView(BaseView):
     route_base = "/astralpositionsview"
-    default_view = "show"
+    default_view = "comingsoon"
 
-    @expose("/show/", methods=["GET"])
-    def show(self):
+    @expose("/comingsoon/", methods=["GET"])
+    def coming_soon(self):
         return self.render_template("widgets/astral_positions.html")
 
 
