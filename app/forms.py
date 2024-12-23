@@ -15,18 +15,18 @@ class SunriseForm(DynamicForm):
     location = SelectField("Select Location", choices=locations, default="Dublin, Ireland")
     date_select = DateField("Select Date", default=date.today())
 
-#
-# class CopernicusForm(DynamicForm):
-#     start_date = DateField("Start Date", default=date.today())
-#     end_date = DateField("End Date", default=date.today())
-#     objects = [
-#         ("", ""),
-#         ("Sun", "Sun"),
-#         ("Mercury", "mercury"),
-#         ("Venus", "venus"),
-#         ("Mars", "mars"),
-#         ("Jupiter", "jupiter"),
-#         ("Saturn", "saturn"),
-#     ]
-#     body = SelectField("Select Planetary Body", choices=objects)
+
+class CopernicusForm(DynamicForm):
+    start_date = DateField("Start Date", default=date.today())
+    end_date = DateField("End Date", default=date.today())
+    objects = [
+        ("", ""),
+        ("Sun", "Sun"),
+        ("Mercury", "mercury"),
+        ("Venus", "venus"),
+        ("Mars", "mars"),
+        ("Jupiter", "jupiter"),
+        ("Saturn", "saturn"),
+    ]
+    body = SelectField("Select Planetary Body", choices=objects)
 

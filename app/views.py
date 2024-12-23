@@ -51,7 +51,7 @@ class AstralPositionsView(BaseView):
     default_view = "comingsoon"
 
     @expose("/comingsoon/", methods=["GET"])
-    def coming_soon(self):
+    def comingsoon(self):
         return self.render_template("widgets/astral_positions.html")
 
 

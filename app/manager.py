@@ -15,7 +15,7 @@ def seed_users():
             "admin",
             "Conor",
             "Breen",
-            "conor.breen+admin@plusvital.com",
+            "conor.breen32+admin@gmail.com",
             [admin],
             os.environ.get("SUPERUSER_PASS"),
         )
@@ -29,7 +29,7 @@ def seed_users():
             "testuser",
             "Test",
             "User",
-            "conor.breen+teststaff@plusvital.com",
+            "conor.breen32+test@gmail.com",
             [base, staff],
             os.environ.get("USER_PASS"),
         )

@@ -82,4 +82,4 @@ def register_views():
 
     appbuilder.add_view_no_menu(HomeView())
     appbuilder.add_view_no_menu(HealthView())
-    # appbuilder.security_cleanup()
+    appbuilder.security_cleanup()

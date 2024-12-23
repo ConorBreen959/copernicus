@@ -29,7 +29,7 @@ class Config:
     APP_NAME = os.environ.get("APP_NAME", "Copernicus")
     APP_ICON = os.environ.get("APP_ICON", "/static/img/solar-logo.png")
     # APP_THEME = "flatly.css"
-    print(APP_NAME)
+
     # ----------------------------------------------------
     # AUTHENTICATION CONFIG
     # ----------------------------------------------------
@@ -69,7 +69,7 @@ class Config:
         ["SunriseView", "can_this_form_get"],
         ["SunriseView", "can_this_form_post"],
         ["AstralPositions View", "menu_access"],
-        ["AstralPositionsView", "can_coming_soon"],
+        ["AstralPositionsView", "can_comingsoon"],
     ]
     FAB_ROLES = {
         "Public": [

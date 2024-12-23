@@ -5,17 +5,15 @@ Revises: ce740692af1e
 Create Date: 2024-12-14 21:26:20.610955
 
 """
-from typing import Sequence, Union
-
 from alembic import op
 import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision: str = 'e091029440fd'
-down_revision: Union[str, None] = 'ce740692af1e'
-branch_labels: Union[str, Sequence[str], None] = ()
-depends_on: Union[str, Sequence[str], None] = None
+revision = 'e091029440fd'
+down_revision = 'ce740692af1e'
+branch_labels = ()
+depends_on = None
 
 
 def upgrade() -> None:

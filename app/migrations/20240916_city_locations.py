@@ -1,21 +1,19 @@
 """dev_migration
 
 Revision ID: ce740692af1e
-Revises: 
+Revises: 175a4096e46d
 Create Date: 2024-09-16 22:39:48.385997
 
 """
-from typing import Sequence, Union
-
 from alembic import op
 import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision: str = 'ce740692af1e'
-down_revision: Union[str, None] = None
-branch_labels: Union[str, Sequence[str], None] = ('default',)
-depends_on: Union[str, Sequence[str], None] = None
+revision = 'ce740692af1e'
+down_revision = '175a4096e46d'
+branch_labels = ()
+depends_on = None
 
 
 def upgrade() -> None:
