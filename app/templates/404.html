@@ -1,5 +1,7 @@
+{% extends "appbuilder/base.html" %}
+{% import 'appbuilder/general/lib.html' as lib %}
+
 {% block content %}
-<h2>{{_('Page not found')}}</h2>
+    {{ lib.panel_begin("") }}
+   <h2>{{_('Page not found')}}</h2>
 {% endblock %}
-
-
