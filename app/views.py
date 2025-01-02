@@ -95,3 +95,13 @@ def page_not_found(e):
         ),
         404,
     )
+
+
+@appbuilder.app.errorhandler(500)
+def internal_server_error(e):
+    return (
+        render_template(
+            "500.html", base_template=appbuilder.base_template, appbuilder=appbuilder
+        ),
+        500,
+    )
