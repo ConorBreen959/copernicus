@@ -27,15 +27,18 @@
                     },
                     dataType: 'json',
                     beforeSend: function () {
+                        $("#daylight_summary_container").html("");
                         $("#sunrise_chart_container").html("Generating...");
                         $("#date_chart_container").html("");
                     },
                     success: function (response) {
                         console.log(response);
                         var sunrise_chart = response["sunrise_chart"]
-                        var date_chart = response["date_chart"]
                         vegaEmbed('#sunrise_chart_container', sunrise_chart).catch(console.warn);
+                        var date_chart = response["date_chart"]
                         vegaEmbed('#date_chart_container', date_chart).catch(console.warn);
+                        var daylight_summary = response["daylight_summary"]
+                        $("#daylight_summary_container").html(daylight_summary);
                     },
                     error: function (xhr) {
                         $("#sunrise_chart_container").html(xhr);
@@ -84,7 +87,9 @@
                 </div>
         </form>
         <button type='button' id="search_button" class="btn btn-sm btn-primary">Search</button>
-        <div class="col">
+        <div class="col-md-auto">
+            <hr class="solid">
+            <div id="daylight_summary_container" class="daylight-summary-container"></div>
             <hr class="solid">
             <div id="sunrise_chart_container" class="sunrise-chart-container"></div>
             <hr class="solid">

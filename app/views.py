@@ -38,10 +38,11 @@ class SunriseView(SimpleFormView):
                 city_location = CityLocations.query.filter_by(city_name=location).first()
                 city_dict = city_location.to_json()
                 self.sun_graph = SunriseGraph(city_dict, date)
-            sunrise_chart, date_chart = self.sun_graph.create_charts(date)
+            sunrise_chart, date_chart, daylight_summary = self.sun_graph.create_charts(date)
             json_packet = {
                 "sunrise_chart": json.loads(sunrise_chart.to_json()),
-                "date_chart": json.loads(date_chart.to_json())
+                "date_chart": json.loads(date_chart.to_json()),
+                "daylight_summary": daylight_summary,
             }
             return jsonify(json_packet)
 
