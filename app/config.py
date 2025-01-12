@@ -42,6 +42,8 @@ class Config:
     # The default user self registration role
     AUTH_USER_REGISTRATION_ROLE = "BaseUser"
 
+    SQLALCHEMY_POOL_RECYCLE = 3600
+    SQLALCHEMY_POOL_PRE_PING = True
     SQLALCHEMY_TRACK_MODIFICATIONS = False
 
     # Config for Flask-WTF Recaptcha necessary for user registration

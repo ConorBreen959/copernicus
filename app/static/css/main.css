@@ -170,8 +170,13 @@ body {
     width: 80%;
 }
 
-.date-chart-container{
-    margin-left: 100px
+.date-chart-container {
+    margin-left: 20%;
+}
+
+.daylight-summary-container {
+    width: max-content;
+    font-size: 2em;
 }
 
 .panel-primary {

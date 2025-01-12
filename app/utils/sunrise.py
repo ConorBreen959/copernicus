@@ -41,7 +41,8 @@ class SunriseGraph:
         date_line = self.add_date_line(date)
         sunrise_chart = sunrise_chart + date_line
         date_chart = self.create_date_chart(date, self.sunrise_data)
-        return sunrise_chart, date_chart
+        daylight_summary = self.daylight_hours(date, self.sunrise_data)
+        return sunrise_chart, date_chart, daylight_summary
 
     def set_timezone(self, city_dict):
         self.city = city_dict["city_name"]
@@ -80,12 +81,16 @@ class SunriseGraph:
             twilight_event = twilight_event.replace("twilight", "dawn")
             if start_time.hour > 12:
                 twilight_event = twilight_event.replace("dawn", "dusk")
-            data = self.process_twilight_data(twilight_event, start_date, start_time, end_date, end_time)
+            data = self.process_twilight_data(
+                twilight_event, start_date, start_time, end_date, end_time
+            )
             twilight_data += data
         sunrise_df = pd.DataFrame.from_dict(twilight_data)
         return sunrise_df
 
-    def process_twilight_data(self, twilight_event, start_date, start_time, end_date, end_time):
+    def process_twilight_data(
+        self, twilight_event, start_date, start_time, end_date, end_time
+    ):
         twilight_data = []
         data_dict = {
             "Date": start_date,
@@ -134,7 +139,7 @@ class SunriseGraph:
                     "title": {
                         "anchor": "start",
                         "dy": -15,
-                        "fontSize": 16,
+                        "fontSize": 24,
                         "fontWeight": 600,
                     },
                     "area": {"fill": "#909090"},
@@ -146,7 +151,7 @@ class SunriseGraph:
         alt.themes.enable("background")
 
         chart = alt.LayerChart(title=f"Sunrise Chart: {self.city}")
-        legend_y_position = 50
+        legend_y_position = 40
 
         y_axis_limits = list(reversed(["1900-01-01T00:00:00", "1900-01-02T00:00:00"]))
         y_scale = alt.Scale(domain=y_axis_limits)
@@ -170,15 +175,16 @@ class SunriseGraph:
                     .transform_filter(datum.Event == event_type)
                 )
                 legend_x_position = 820
-                legend_y_position += 12.5
+                legend_y_position += 15
 
                 if any(event_type.endswith(string) for string in ["dawn", "Day"]):
                     legend_box = self.add_legend_box(
                         [event_type],
                         fill,
                         (legend_x_position, legend_y_position),
-                        20,
                         25,
+                        30,
+                        font_size=16
                     )
                     chart += legend_box
 
@@ -188,7 +194,11 @@ class SunriseGraph:
             alt.X(axis=alt.Axis(format="%b")).title("Date"),
             alt.Y(axis=alt.Axis(format="%H:%M", tickCount=6)).title("Hour"),
         )
-        chart = chart.configure_axis(grid=False).configure_view(stroke=None)
+        chart = chart.configure_axis(
+            labelFontSize=12,
+            titleFontSize=16,
+            grid=False,
+        ).configure_view(stroke=None)
         chart = chart.properties(width=800, height=450)
         chart = chart.interactive()
         return chart
@@ -196,8 +206,8 @@ class SunriseGraph:
     def create_date_chart(self, date, sunrise_data):
 
         def add_date_chart_legend(chart, date_df):
-            legend_x_position = 20
-            legend_y_position = 120
+            legend_x_position = -20
+            legend_y_position = 150
             for event_type, fill in self.event_types.items():
                 if any(
                     event_type.endswith(string) for string in ["dusk", "Day", "Night"]
@@ -212,10 +222,10 @@ class SunriseGraph:
                             f'{row.Starts.strftime("%H:%M")} - {row.Ends.strftime("%H:%M")}'
                         )
                     legend_box = self.add_legend_box(
-                        text, fill, (legend_x_position, legend_y_position), 20, 25
+                        text, fill, (legend_x_position, legend_y_position), 25, 35, font_size=16
                     )
                     chart += legend_box
-                    legend_x_position += 120
+                    legend_x_position += 150
             return chart
 
         date_df = sunrise_data.loc[
@@ -226,7 +236,11 @@ class SunriseGraph:
             alt.X(axis=alt.Axis(format="%H:%M", tickCount=9)).title("Hour"),
             alt.Y(axis=None),
         )
-        chart = chart.properties(width=600, height=80)
+        chart = chart.properties(width=700, height=80)
+        chart = chart.configure_axis(
+            labelFontSize=12,
+            titleFontSize=12,
+        )
         chart = add_date_chart_legend(chart, date_df)
 
         date_chart = (
@@ -259,6 +273,31 @@ class SunriseGraph:
         chart += date_chart + legend_box
         return chart
 
+    def daylight_hours(self, date, sunrise_data):
+        today = datetime.strptime(date, "%Y-%m-%d")
+        yesterday = today - timedelta(1)
+        tomorrow = today + timedelta(1)
+        yesterday_length, today_length, tomorrow_length = (
+            self.day_length(sunrise_data, day) for day in [yesterday, today, tomorrow]
+        )
+        styled_today_length = self.style_timedelta(today_length)
+        shorter_html_string = '<span style="color: #a30000">shorter.</span>'
+        longer_html_string = '<span style="color: #5081ec">longer.</span>'
+        yesterday_difference = abs(today_length - yesterday_length)
+        yesterday_diff_summary = (
+            self.style_timedelta(yesterday_difference),
+            shorter_html_string if today_length > yesterday_length else longer_html_string
+        )
+        tomorrow_difference = abs(today_length - tomorrow_length)
+        tomorrow_diff_summary = (
+            self.style_timedelta(tomorrow_difference),
+            shorter_html_string if yesterday_length > today_length else longer_html_string
+        )
+        daylight_summary = f"<p>There are {styled_today_length} of daylight today.</p>"
+        daylight_summary += f"<p>Yesterday was {yesterday_diff_summary[0]} {yesterday_diff_summary[1]}</p>"
+        daylight_summary += f"<p>Tomorrow will be {tomorrow_diff_summary[0]} {tomorrow_diff_summary[1]}</p>"
+        return daylight_summary
+
     def add_legend_box(
         self,
         text,
@@ -267,7 +306,7 @@ class SunriseGraph:
         box_size,
         text_offset,
         align="left",
-        font_size=10,
+        font_size=12,
         corner_radius=5,
     ):
         x_position, y_position = legend_positions
@@ -320,19 +359,46 @@ class SunriseGraph:
             color="#08415C",
         ).encode(
             text="Date",
-             opacity=alt.condition(
-                 alt.datum.Starts == alt.expr.toDate('1900-01-01T23:59'),
-                 alt.value(1),
-                 alt.value(0)
-             )
-         )
+            opacity=alt.condition(
+                alt.datum.Starts == alt.expr.toDate("1900-01-01T23:59"),
+                alt.value(1),
+                alt.value(0),
+            ),
+        )
         date_line_chart += text
         return date_line_chart
 
     def format_time(self, time):
-        time_string = str(time.astimezone(self.timezone))[:16]
+        time_string = str(time.astimezone(self.timezone))[:19]
         date_x, time_x = time_string.split(" ")
         date_object = datetime.strptime(date_x, "%Y-%m-%d")
         date_object = date_object.replace(hour=0, minute=0, second=0, microsecond=0)
-        time_object = datetime.strptime(time_x, "%H:%M")
+        time_object = datetime.strptime(time_x, "%H:%M:%S")
         return date_object, time_object
+
+    def day_length(self, sunrise_data, date_object):
+        date_string = date_object.strftime("%Y-%m-%d")
+        date_df = sunrise_data.loc[
+            (sunrise_data["Date"] == date_string) & (sunrise_data["Event"] == "Day")
+        ]
+        day_length = timedelta(0)
+        for row in date_df.itertuples():
+            day_length += row.Ends - row.Starts
+        return day_length
+
+    def style_timedelta(self, duration):
+        total_seconds = duration.total_seconds()
+        hours = total_seconds // 3600
+        minutes = (total_seconds % 3600) // 60
+        seconds = total_seconds % 60
+        time_string = ""
+        for measure, name in zip(
+            [hours, minutes, seconds], ["hour", "minute", "second"]
+        ):
+            if measure > 0:
+                time_string += f"{int(measure)} {name}"
+                if measure > 1:
+                    time_string += "s"
+                time_string += " "
+        time_string = time_string.strip()
+        return time_string
