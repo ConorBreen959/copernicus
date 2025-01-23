@@ -15,6 +15,11 @@ class SunriseForm(DynamicForm):
     location = SelectField("Select Location", choices=locations, default="Dublin, Ireland")
     date_select = DateField("Select Date", default=date.today())
 
+    def __init__(self, *args, **kwargs):
+        super().__init__(*args, **kwargs)
+        if not self.date_select.data:
+            self.date_select.data = date.today()
+
 
 class CopernicusForm(DynamicForm):
     start_date = DateField("Start Date", default=date.today())
