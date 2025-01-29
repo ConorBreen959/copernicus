@@ -13,12 +13,7 @@ class SunriseForm(DynamicForm):
     for city in city_locations:
         locations.append((city.city_name, city.city_name))
     location = SelectField("Select Location", choices=locations, default="Dublin, Ireland")
-    date_select = DateField("Select Date", default=date.today())
-
-    def __init__(self, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        if not self.date_select.data:
-            self.date_select.data = date.today()
+    date_select = DateField("Select Date", default=date.today)
 
 
 class CopernicusForm(DynamicForm):
