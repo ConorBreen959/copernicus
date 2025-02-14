@@ -153,8 +153,8 @@ class SunriseGraph:
         chart = alt.LayerChart(title=f"Sunrise Chart: {self.city}")
         legend_y_position = 40
 
-        y_axis_limits = list(reversed(["1900-01-01T00:00:00", "1900-01-02T00:00:00"]))
-        y_scale = alt.Scale(domain=y_axis_limits)
+        y_axis_limits = list(["1900-01-01T00:00:00", "1900-01-02T00:00:00"])
+        y_scale = alt.Scale(domain=y_axis_limits, reverse=True)
 
         for event_type, fill in self.event_types.items():
             if event_type != "Night":
