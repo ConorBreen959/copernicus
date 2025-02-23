@@ -71,10 +71,10 @@
     {% set begin_sep_field = '<td>' %}
     {% set end_sep_field = '</td>' %}
 
-    <div class="col-md-3">
+    <div class="col-md-8 pull-left">
         <form id="sunrise_form" action="" method="post" enctype="multipart/form-data">
                 <div class="table-responsive">
-                    <table class="table table-bordered">
+                    <table class="pull-left table table-bordered">
                         {% for col in include_cols %}
                             {% set field = form[col] %}
                             {% if field.name not in exclude_cols %}
@@ -93,7 +93,7 @@
             <hr class="solid">
             <div id="sunrise_chart_container" class="sunrise-chart-container"></div>
             <hr class="solid">
-            <div id="date_chart_container" class="date-chart-container"></div>
+            <div id="date_chart_container"></div>
         </div>
     </div>
 {% endblock %}
