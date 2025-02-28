@@ -26,7 +26,7 @@ def create_app():
         stream=sys.stdout,
         format="%(asctime)s:%(levelname)s:%(name)s:%(message)s",
     )
-    logging.getLogger().setLevel(logging.DEBUG)
+    logging.getLogger().setLevel(logging.INFO)
 
     # @app.before_request
     # def check_url():

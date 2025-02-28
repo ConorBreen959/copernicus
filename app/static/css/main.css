@@ -24,6 +24,12 @@ body {
     }
 }
 
+hr.rounded {
+    border-top: 3px solid #BBBBBB;
+    border-radius: 5px;
+    width: 100%;
+}
+
 table {
   display: block;
   /*max-width: -moz-fit-content;*/

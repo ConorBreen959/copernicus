@@ -141,6 +141,7 @@ class SunriseGraph:
                         "dy": -15,
                         "fontSize": 24,
                         "fontWeight": 600,
+                        "color": "#2f5275",
                     },
                     "area": {"fill": "#909090"},
                 }
@@ -197,6 +198,9 @@ class SunriseGraph:
         chart = chart.configure_axis(
             labelFontSize=12,
             titleFontSize=16,
+            labelColor = "#2f5275",
+            titleColor = "#2f5275",
+            tickColor = "#2f5275",
             grid=False,
         ).configure_view(stroke=None)
         chart = chart.properties(width=800, height=450)
@@ -360,7 +364,7 @@ class SunriseGraph:
         ).encode(
             text="Date",
             opacity=alt.condition(
-                alt.datum.Starts == alt.expr.toDate("1900-01-01T23:59"),
+                alt.datum.Starts == alt.expr.toDate("1900-01-01T00:00"),
                 alt.value(1),
                 alt.value(0),
             ),
